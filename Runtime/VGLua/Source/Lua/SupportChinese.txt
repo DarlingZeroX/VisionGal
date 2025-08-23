@@ -1,0 +1,55 @@
+llex.c 539行
+
+默认
+      default: {
+        if (lislalpha(ls->current)) {  /* identifier or reserved word? */
+          TString *ts;
+          do {
+            save_and_next(ls);
+          } while (lislalnum(ls->current));
+          ts = luaX_newstring(ls, luaZ_buffer(ls->buff),
+                                  luaZ_bufflen(ls->buff));
+          seminfo->ts = ts;
+          if (isreserved(ts))  /* reserved word? */
+            return ts->extra - 1 + FIRST_RESERVED;
+          else {
+            return TK_NAME;
+          }
+        }
+        else {  /* single-char tokens ('+', '*', '%', '{', '}', ...) */
+          int c = ls->current;
+          next(ls);
+          return c;
+        }
+      }
+
+修改
+
+default: {
+  if (lislalpha(ls->current)|| ls->current >= 0x80) {  /* identifier or reserved word? *///修改
+    TString *ts;
+    do {
+      if (ls->current >= 0x80) {  //修改
+        save_and_next(ls);  //修改
+        if(ls->current !='('&&ls->current >=0x80)//修改
+          save_and_next(ls);  //修改
+      }
+      else if(ls->current !='('){  //修改
+        save_and_next(ls);  //修改
+      } 
+    } while (lislalnum(ls->current)|| ls->current >= 0x80);//修改
+    ts = luaX_newstring(ls, luaZ_buffer(ls->buff),
+                        luaZ_bufflen(ls->buff));
+    seminfo->ts = ts;
+    if (isreserved(ts))  /* reserved word? */
+      return ts->extra - 1 + FIRST_RESERVED;
+    else {
+      return TK_NAME;
+    }
+  }
+  else {  /* single-char tokens (+ - / ...) */
+    int c = ls->current;
+    next(ls);
+    return c;
+  }
+}

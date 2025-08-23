@@ -1,0 +1,174 @@
+Projects=项目
+Open=打开
+New project=新建项目
+New Project=新建项目
+Create project=创建项目
+Cancel=取消
+Close=关闭
+Open project=打开项目
+Remove project=移除项目
+Edit project=编辑项目
+Project name=项目名称
+Project location=项目位置
+Project name cannot be empty!=项目名称不能为空!
+Invalid project location!=项目位置无效!
+The project already exists!=该项目已存在！
+Create project successfully=创建项目成功
+Create project failed=创建项目失败
+
+Build=生成
+Target Platform=目标平台
+Build Setting...=生成设置
+Build Setting=生成设置
+Application main scene=应用程序主场景
+Application main scene is invalid!=应用程序主场景无效
+Build output directory=生成输出目录
+Build output directory cannot be empty!=生成输出目录不能为空！
+Build output directory is invalid!=生成输出目录无效！
+Build output directory must be empty directory!=生成输出目录必须为空目录
+Building project...=生成项目中...
+Build Process=生成进度
+Build successfully!=生成成功
+Build failed!=生成失败
+
+File=文件
+Edit=编辑
+Window=窗口
+Help=帮助
+Editor=编辑器
+
+Editor Name=编辑器名称
+Editor Window Width=编辑器窗口宽度
+Editor Window Height=编辑器窗口高度
+Editor Font Size=编辑器字体大小
+Theme=主题
+Editor Theme=编辑器主题
+Dark Theme=深色主题
+Blue Theme=蓝色主题
+Light Theme=浅色主题
+Classic Theme=经典主题
+Editor Language=编辑器语言
+EN-US=英语-美国
+ZH-CN=简体中文-中国
+
+Project Setting=项目设置
+Project Setting...=项目设置...
+Application=应用程序
+Editor Main Scene=编辑器主场景
+Application Name=应用程序名称
+Application Main Scene=应用程序主场景
+Window Width=窗口宽度
+Window Height=窗口高度
+Window Allow Resize=窗口能否改变大小
+Design Width=设计宽度
+Design Height=设计高度
+
+Copy=复制
+
+Info=消息
+Warning=警告
+Success=成功
+Error=错误
+
+Open scene successfully=成功打开场景
+Save current scene successfully=成功保存当前场景
+Save scene successfully=成功保存场景
+Save scene failed=保存场景失败
+Save current scene failed=保存当前场景失败
+
+New Directory=创建新目录
+Name=名称
+Ok=确认
+Cancel=取消
+Don't Save=不保存
+Please Confirm...=待确认...
+Save current scene=保存当前场景
+
+New Scene=创建新场景
+Open Scene=打开场景
+Save Scene=保存场景
+Save Scene As...=场景另存为..
+New Project=创建新项目
+Open Project=打开项目
+Save Project=保存项目
+Exit=退出
+
+Save=保存
+Setting=设置
+Log=日志
+Console=控制台
+Output Log=输出日志
+Content Browser=内容浏览器
+Viewport=视口
+Main Viewport=主视口
+
+Preferences...=偏好...
+Editor Preferences=编辑器偏好
+
+Place Actors=放置actor
+Label=标签
+Type=类型
+Scene Browser=场景浏览器
+
+Details=细节
+Select a game object to view details.=选择一个游戏对象以查看详细信息。
+Label=标签
+Visible=可见性
+
+Rename=重命名
+Remove=删除
+Show in Explorer=在资源管理器中显示
+Create Directory=创建目录
+Refresh=刷新
+Copy Path=复制路径
+Create Scene=新建场景
+Create Lua Script=新建Lua脚本
+Create GalGame Story Script=新建GalGame剧情脚本
+Create UI Document=新建UI文档
+Create UI Css=新建UI样式表
+
+Viewport=视口
+Setting=设置
+
+Transform=变换
+Location=位置
+Rotation=旋转
+Scale=缩放
+
+UI Document=UI文档
+
+Camera=相机
+Sprite=精灵
+Sprite Renderer=精灵渲染器
+Color=颜色
+Flip=翻转
+
+Name=名称
+Value=值
+
+Audio Source=音频源
+Audio Clip=音频片段
+Volume=音量
+
+Video Player=视频播放器
+Video Clip=视频片段
+Play On Awake=开始就播放
+Wait For First Frame=等待第一帧
+Loop=循环
+
+GalGame Engine=GalGame引擎
+
+Options=选项
+Clear=清除
+Filter=过滤器
+
+Document=文档
+Reload=重新加载
+
+Story Script=剧情脚本
+Reload Story Script=重新加载剧情脚本
+
+The texture is loaded successfully: %s [Width: %d  Height: %d]=成功加载纹理：%s [宽度：%d 高度：%d]
+The texture failed to load: %s=纹理加载失败：%s
+The scene was loaded successfully: %s=场景加载成功：%s
+Failed to load the scene: %s=场景加载失败：%s
