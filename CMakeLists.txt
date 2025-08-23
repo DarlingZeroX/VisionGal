@@ -1,4 +1,4 @@
-﻿# CMakeList.txt: 顶层 CMake 项目文件，在此处执行全局配置,并包含子项目。
+# CMakeList.txt: 顶层 CMake 项目文件，在此处执行全局配置,并包含子项目。
 cmake_minimum_required (VERSION 3.21)
 
 # 设置标准
@@ -9,7 +9,12 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 # 设置 Vcpkg 工具链文件
-set(CMAKE_TOOLCHAIN_FILE "E:/vcpkg/scripts/buildsystems/vcpkg.cmake" CACHE STRING "")
+#set(CMAKE_TOOLCHAIN_FILE "E:/vcpkg/scripts/buildsystems/vcpkg.cmake" CACHE STRING "")
+# 仅在用户没指定 CMAKE_TOOLCHAIN_FILE 时设置默认值
+if(NOT CMAKE_TOOLCHAIN_FILE)
+    set(CMAKE_TOOLCHAIN_FILE "E:/vcpkg/scripts/buildsystems/vcpkg.cmake"
+        CACHE STRING "Vcpkg toolchain file")
+endif()
 
 project ("VisionGal" LANGUAGES C CXX)
 

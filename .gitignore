@@ -1,6 +1,8 @@
-# 忽略的文件夹
+# 蹇界暐鐨勬枃浠跺す
 out/
+build/
 Backup/
 .vs/
+
 
 

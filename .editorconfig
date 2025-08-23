@@ -5,8 +5,7 @@ root = true
 
 # Visual C++ 代码样式设置
 charset = utf-8
-
-cpp_generate_documentation_comments = doxygen
+cpp_generate_documentation_comments = doxygen_slash_star
 
 # Visual C++ 格式设置
 
