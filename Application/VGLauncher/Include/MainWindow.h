@@ -1,6 +1,11 @@
+// Copyright (c) 2025 梦旅缘心
+// This file is part of VisionGal and is licensed under the MIT License.
+// For the latest information, see https://github.com/DarlingZeroX/VisionGal
+// See the LICENSE file in the project root for details.
+
 #pragma once
-#include <VGEditorFramework/Include/UIInterface.h>
 #include <VGImgui/IncludeImGui.h>
+#include <VGEditorFramework/Include/UIInterface.h>
 
 namespace VisionGal::Editor
 {
@@ -26,17 +31,18 @@ namespace VisionGal::Editor
 
 		/// @brief 移除一个项目
 		/// @param index 索引
-		void RemoveProject(int index);
-
+		bool RemoveProject(int index);
 		/// @brief 编辑一个项目
 		/// @param index 索引
-		void EditProject(int index);
+		bool EditProject(int index);
+		/// @brief 打开项目对话框
+		void OpenProjectDialog();
 	private:
+		static bool LeftButtonUI(const std::string& title, const std::string& icon);
 		void OnGUIInternal();
 		void RenderLeftUI();
 		void RenderRightUI();
 		void RenderProjectItem(int index, const std::string& name, const std::string& path);
-		void OpenProjectDialog();
 
 		ImVec2 m_ProjectItemSize;
 		int m_SelectProject;

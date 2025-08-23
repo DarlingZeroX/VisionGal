@@ -8,7 +8,7 @@
 
 namespace VisionGal
 {
-    class VG_ENGINE_API VGWindow: public Horizon::SDL3::OpenglWindow
+    class VG_ENGINE_API VGWindow: public Horizon::SDL3::OpenGLWindow
     {
     public:
         VGWindow();

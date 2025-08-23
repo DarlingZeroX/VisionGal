@@ -17,6 +17,9 @@ namespace ImGuiEx
 #define IMGUIEX_STYLE_VAR(style, val) ImGuiEx::ScopedStyleVar __##style(style,val);
 	//#define IMGUIEX_STYLE_COLOR(col, val) ImGuiEx::ScopedStyleColor __ImGuiStyleVar_##col(ImGuiStyleVar_##col,val);
 
+	IMGUI_API void Initialize();
+	IMGUI_API void Render();
+
 		// From imgui/misc/cpp/imgui_stdlib.h
 		// ImGui::InputText() with std::string
 		// Because text input needs dynamic resizing, we need to setup a callback to grow the capacity

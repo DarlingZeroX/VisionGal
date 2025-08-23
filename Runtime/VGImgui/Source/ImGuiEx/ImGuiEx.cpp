@@ -32,6 +32,18 @@ namespace ImGuiEx
 		return 0;
 	}
 
+	void Initialize()
+	{
+		// 创建Imgui的UI任务执行器
+		ImTaskManager::CreateManager();
+	}
+
+	void Render()
+	{
+		ImTaskManager::GetInstance().RenderUITask();
+		RenderNotifications();
+	}
+
 	bool InputText(const char* label, std::string& str, ImGuiInputTextFlags flags, ImGuiInputTextCallback callback, void* user_data)
 	{
 		IM_ASSERT((flags & ImGuiInputTextFlags_CallbackResize) == 0);

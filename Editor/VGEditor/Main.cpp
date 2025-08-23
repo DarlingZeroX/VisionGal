@@ -7,9 +7,10 @@ int main(int argc, char* argv[])
 {
 	using namespace VisionGal;
 
+	// 获取编辑器项目根目录
 	std::string editorProjectRootDir;
 #ifdef EDITOR_PROJECT_ROOT_DIR
-	std::cout << "Engine Project root is: " << EDITOR_PROJECT_ROOT_DIR << std::endl;
+	std::cout << "VisionGal Project root is: " << EDITOR_PROJECT_ROOT_DIR << std::endl;
 	editorProjectRootDir = EDITOR_PROJECT_ROOT_DIR;
 #endif
 
@@ -19,14 +20,11 @@ int main(int argc, char* argv[])
 	// 加载编辑器配置
 	Editor::EditorCore::LoadEditorPreferences();
 
-	std::string projectRootDir = editorProjectRootDir + "/Projects/New Project";
-
 	// 读取项目根目录
-	std::string projectText;
-	if (Horizon::HFileSystem::ReadTextFromFile("Data/EditorStartupData.txt", projectText))
-	{
-		projectRootDir = projectText;
-	}
+	std::string projectRootDir = editorProjectRootDir + "/Projects/Test Project";
+	std::string projectPath;
+	if (Horizon::HFileSystem::ReadTextFromFile("Data/EditorStartupData.txt", projectPath))
+		projectRootDir = projectPath;
 
 	// 检查项目目录是否存在
 	if (!EditorInitializer::CheckProjectRootDir(projectRootDir))
@@ -41,13 +39,18 @@ int main(int argc, char* argv[])
 	paths.engine = editorProjectRootDir + "/Resource/Engine/";
 	EditorInitializer::InitializeVFS(paths);
 
+	// 加载项目
 	VGEngine::Get()->LoadProject();
 
+	// 初始化编辑器应用
 	Ref<Editor::VGEditorApplication> editor = CreateRef<Editor::VGEditorApplication>();
 	editor->Initialize();
 	editor->InitializeEditorPanels();
-
 	VGEngine::Get()->AddApplication(editor);
+
+	// 加载编辑器主场景
 	VGEngine::Get()->LoadEditorMainScene();
+
+	// 运行引擎主循环
 	VGEngine::Get()->Run();
 }

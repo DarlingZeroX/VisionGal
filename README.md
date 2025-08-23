@@ -25,7 +25,7 @@ vcpkg install ffmpeg
 安装ffmpeg的时间可能会比较长，需要耐心等待，因为需要编译ffmpeg的源代码。
 
 ### 构建
-安装完依赖库后，按以下命令构建VisonGal
+安装完依赖库后，使用Git和CMake按以下命令构建VisonGal
 
 ```
 git clone https://github.com/DarlingZeroX/VisionGal
@@ -40,19 +40,33 @@ path-to-vcpkg 替换为你实际的vcpkg安装路径，例如：C:\vcpkg
 
 ## 目录结构
 VisionGal/
+
 ├── Application/         # 应用程序模块
+
 │   ├── VGDesktopApplication/  # 桌面应用
+
 │   ├── VGLauncher/            # 启动器
+
 │   └── VGPackageTool/         # 打包工具
+
 ├── Editor/              # 编辑器模块
+
 │   ├── VGEditor/              # 主编辑器
+
 │   └── VGEditorFramework/     # 编辑器框架
+
 ├── Runtime/             # 运行时模块
+
 │   ├── HCore/                 # 核心系统
+
 │   ├── VGEngine/              # 引擎核心
+
 │   ├── VGImgui/               # ImGui 集成
+
 │   ├── VGLua/                 # Lua 脚本支持
+
 │   └── VGPackager/            # 资产打包库
+
 └── Resource/            # 资源文件
 
 ## 贡献指南
@@ -61,6 +75,7 @@ VisionGal/
 2. 创建一个新的分支
 3. 提交您的更改
 4. 提交 Pull Request
+
 ## 许可证
 VisionGal 采用 MIT 许可证 ，允许个人和商业使用。
 

@@ -1,11 +1,16 @@
+// Copyright (c) 2025 梦旅缘心
+// This file is part of VisionGal and is licensed under the MIT License.
+// For the latest information, see https://github.com/DarlingZeroX/VisionGal
+// See the LICENSE file in the project root for details.
+
 #include "MainWindow.h"
-#include "NewProjectUITask.h"
 #include "VGLauncherData.h"
-#include "HCore/Include/Platform/NativeFileDialog/portable-file-dialogs.h"
-#include "VGEditorFramework/Include/EditorCore/Localization.h"
-#include "VGEngine/Include/Engine/VGEngine.h"
-#include "VGImgui/Include/ImGuiEx/IconFont/IconsFontAwesome5Pro.h"
+#include "NewProjectUITask.h"
 #include <filesystem>
+#include <HCore/Include/Platform/NativeFileDialog/portable-file-dialogs.h>
+#include <VGImgui/Include/ImGuiEx/IconFont/IconsFontAwesome5Pro.h>
+#include <VGEngine/Include/Engine/VGEngine.h>
+#include <VGEditorFramework/Include/EditorCore/Localization.h>
 
 namespace VisionGal::Editor
 {
@@ -13,14 +18,6 @@ namespace VisionGal::Editor
 	{
 		m_ProjectItemSize.y = 63.0f;;
 		m_SelectProject = -1;
-		//m_WindowClass.ClassId = "VGLauncherMainWindow";
-		//m_WindowClass.ClassType = ImGuiWindowClassType_DockSpace;
-
-		//auto& data = VGLauncherData::GetLauncherData();
-		//data.Projects.push_back({"Test1", "E:/Test1" });
-		//data.Projects.push_back({"Test2", "E:/Test2" });
-		//data.Projects.push_back({"Test3", "E:/Test3" });
-		//data.Projects.push_back({"Test4", "E:/Test4" });
 	}
 
 	void VGLauncherMainWindow::OnGUI()
@@ -32,14 +29,14 @@ namespace VisionGal::Editor
 			| ImGuiWindowFlags_NoSavedSettings
 			| ImGuiWindowFlags_NoBringToFrontOnFocus;
 
-		// 设置窗口位置和大小
+		// 设置窗口位置和大小，使其覆盖整个视口
 		bool use_work_area = true;
 		const ImGuiViewport* viewport = ImGui::GetMainViewport();
 		ImGui::SetNextWindowPos(use_work_area ? viewport->WorkPos : viewport->Pos);
 		ImGui::SetNextWindowSize(use_work_area ? viewport->WorkSize : viewport->Size);
 
 		// 开始绘制窗口
-		if (ImGui::Begin("Main Editor", nullptr, flags))
+		if (ImGui::Begin(GetWindowFullName().c_str(), nullptr, flags))
 		{
 			OnGUIInternal();
 		}
@@ -56,7 +53,7 @@ namespace VisionGal::Editor
 
 	std::string VGLauncherMainWindow::GetWindowFullName()
 	{
-		return "VGLauncherMainWindow";
+		return GetWindowName();
 	}
 
 	std::string VGLauncherMainWindow::GetWindowName()
@@ -77,9 +74,7 @@ namespace VisionGal::Editor
 		// 显示启动器左边的按钮UI
 		{
 			ImGui::BeginChild("left pane", ImVec2(150, 0), ImGuiChildFlags_Borders | ImGuiChildFlags_ResizeX);
-
 			RenderLeftUI();
-
 			ImGui::EndChild();
 		}
 
@@ -89,12 +84,18 @@ namespace VisionGal::Editor
 		{
 			ImGui::BeginGroup();
 			ImGui::BeginChild("item view", ImVec2(0, -ImGui::GetFrameHeightWithSpacing())); // Leave room for 1 line below us
-
 			RenderRightUI();
-
 			ImGui::EndChild();
 			ImGui::EndGroup();
 		}
+	}
+
+	bool VGLauncherMainWindow::LeftButtonUI(const std::string& title, const std::string& icon)
+	{
+		return ImGui::Button(
+			EditorText{ title , icon }.c_str(),
+			ImVec2(ImGui::GetContentRegionAvail().x, 40.f)
+		);
 	}
 
 	void VGLauncherMainWindow::RenderLeftUI()
@@ -110,40 +111,23 @@ namespace VisionGal::Editor
 		ImGui::Dummy(ImVec2(0, 25));
 
 		// 打开项目按钮
-		if (ImGui::Button(
-			EditorText{ "Open project" , ICON_FA_FOLDER}.c_str(),
-			ImVec2(ImGui::GetContentRegionAvail().x, 40.f))
-			)
-		{
+		if (LeftButtonUI("Open project", ICON_FA_FOLDER))	{
 			OpenProjectDialog();
 		}
 
 		// 新建项目按钮
-		if (ImGui::Button(
-			EditorText{ "New project" ,ICON_FA_PLUS}.c_str(),
-			ImVec2(ImGui::GetContentRegionAvail().x, 40.f))
-			)
-		{
+		if (LeftButtonUI("New project" ,ICON_FA_PLUS))	{
 			auto* uiTask = new NewProjectUITask();
-
 			auto task = ImGuiEx::NewUITask(uiTask, "New Directory");
 		}
 
 		// 移除项目按钮
-		if (ImGui::Button(
-			EditorText{ "Remove project" ,ICON_FA_TIMES}.c_str(),
-			ImVec2(ImGui::GetContentRegionAvail().x, 40.f))
-			)
-		{
+		if (LeftButtonUI("Remove project" ,ICON_FA_TIMES))	{
 			RemoveProject(m_SelectProject);
 		}
 
 		// 编辑项目按钮
-		if (ImGui::Button(
-			EditorText{ "Edit project",ICON_FA_EDIT }.c_str(),
-			ImVec2(ImGui::GetContentRegionAvail().x, 40.f))
-			)
-		{
+		if (LeftButtonUI("Edit project", ICON_FA_EDIT))	{
 			EditProject(m_SelectProject);
 		}
 
@@ -153,14 +137,12 @@ namespace VisionGal::Editor
 
 	void VGLauncherMainWindow::RenderRightUI()
 	{
-		//ImGui::Text("MyObject: %d", selected);
-		ImGui::Separator();
 		if (ImGui::BeginTabBar("##Tabs", ImGuiTabBarFlags_None))
 		{
 			if (ImGui::BeginTabItem(EditorText{ "Projects" }.c_str()))
 			{
 				// 获取项目列表
-				auto& projects = VGLauncherData::GetLauncherData().Projects;
+				auto& projects = VGLauncherData::GetLauncherData().GetProjects();
 
 				for (int i = 0;i < projects.size(); i++)
 				{
@@ -217,7 +199,7 @@ namespace VisionGal::Editor
 		const ImVec2 namePosStart = ImVec2(p0.x + 20, p0.y + 5);
 		const ImVec2 pathPosStart = ImVec2(p0.x + 20, namePosStart.y + 30);
 
-		// 检查是否有项目被选中
+		// 项目被选中添加边框和背景颜色
 		if (m_SelectProject == index)
 		{
 			draw_list->AddRectFilled(p0, p1, IM_COL32(70, 70, 70, 255), 10.0f);
@@ -228,22 +210,20 @@ namespace VisionGal::Editor
 			draw_list->AddRectFilled(p0, p1, IM_COL32(50, 50, 50, 255), 10.0f);
 		}
 
-		{
-			// 添加剪裁矩形以限制绘制区域
-			ImGui::PushClipRect(p0, p1, true);
-			auto font = ImGui::GetFont();
+		// 添加剪裁矩形以限制绘制区域
+		ImGui::PushClipRect(p0, p1, true);
+		auto font = ImGui::GetFont();
 
-			// 项目名称
-			draw_list->AddText(font, 30, namePosStart, IM_COL32_WHITE, name.c_str());
-			// 项目路径
-			draw_list->AddText(pathPosStart, IM_COL32(165, 165, 165, 255), path.c_str());
+		// 项目名称
+		draw_list->AddText(font, 30, namePosStart, IM_COL32_WHITE, name.c_str());
+		// 项目路径
+		draw_list->AddText(font, 20, pathPosStart, IM_COL32(165, 165, 165, 255), path.c_str());
 
-			// 鼠标悬停时添加边框
-			if (ImGui::IsItemHovered())
-				draw_list->AddRect(p0, p1, IM_COL32(100, 100, 100, 200), 10, 0, 3);
+		// 鼠标悬停时添加边框
+		if (ImGui::IsItemHovered())
+			draw_list->AddRect(p0, p1, IM_COL32(100, 100, 100, 200), 10, 0, 3);
 
-			ImGui::PopClipRect();
-		}
+		ImGui::PopClipRect();
 	}
 
 	void VGLauncherMainWindow::OpenProjectDialog()
@@ -261,35 +241,37 @@ namespace VisionGal::Editor
 		VGProjectItem projectItem;
 		projectItem.Name = selection.substr(selection.find_last_of("/\\") + 1);
 		projectItem.Path = selection;
-		data.Projects.push_back(projectItem);
+		data.AddProject(projectItem);
 	}
 
-	void VGLauncherMainWindow::RemoveProject(int index)
+	bool VGLauncherMainWindow::RemoveProject(int index)
 	{
-		auto& projects = VGLauncherData::GetLauncherData().Projects;
+		auto& projectsData = VGLauncherData::GetLauncherData();
 
 		if (index < 0)
-			return;
+			return false;
 
-		if (index >= projects.size())
-			return;
+		if (index >= projectsData.GetProjects().size())
+			return false;
 
 		// 删除项目
-		projects.erase(projects.begin() + index);
+		projectsData.RemoveProject(index);
 
 		m_SelectProject = 0;
+
+		return true;
 	}
 
-	void VGLauncherMainWindow::EditProject(int index)
+	bool VGLauncherMainWindow::EditProject(int index)
 	{
 		namespace fs = std::filesystem;
-		auto& projects = VGLauncherData::GetLauncherData().Projects;
+		auto& projects = VGLauncherData::GetLauncherData().GetProjects();
 
 		if (index < 0)
-			return;
+			return false;
 
 		if (index >= projects.size())
-			return;
+			return false;
 
 		auto& project = projects[index];
 
@@ -306,7 +288,6 @@ namespace VisionGal::Editor
 				Horizon::HFileSystem::WriteTextToFile("Data/EditorStartupData.txt", project.Path);
 
 				// 使用 std::system 启动编辑器
-				//std::string command = editorPath.string() + "\" --project " + project.Path;
 				std::string command = "\"" + editorPath.string();
 				std::system(command.c_str());  // 简单，但不能获得进程句柄
 			});
@@ -315,9 +296,11 @@ namespace VisionGal::Editor
 		thread.detach();
 
 		// 等待一段时间以确保线程启动编辑器
-		std::this_thread::sleep_for(std::chrono::duration<double>(0.1));
+		std::this_thread::sleep_for(std::chrono::duration<double>(0.5));
 
 		// 退出启动器程序
 		VGEngine::Get()->RequestExit();
+
+		return true;
 	}
 }

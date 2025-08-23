@@ -18,7 +18,7 @@ namespace VisionGal
 
 		static UISystem* Get();
 
-		int Initialize(Horizon::SDL3::OpenglWindow* window, Viewport* viewport);
+		int Initialize(Horizon::SDL3::OpenGLWindow* window, Viewport* viewport);
 		bool LoadDocument(std::string doc);
 
 		Ref<RmlUIDocument> LoadUIDocument(const String& path);
@@ -49,14 +49,14 @@ namespace VisionGal
 		bool ProcessContextEventViewport(Rml::Context* context, const SDL_Event& evt);
 		int ProcessEvent(const SDL_Event& event) override;
 	private:
-		int Initialize(Horizon::SDL3::OpenglWindow* window);
-		bool InitializeUISystem(Horizon::SDL3::OpenglWindow* window);
+		int Initialize(Horizon::SDL3::OpenGLWindow* window);
+		bool InitializeUISystem(Horizon::SDL3::OpenGLWindow* window);
 		bool InitializeRuntimeEnvironment();
 	private:
 		Viewport* m_Viewport = nullptr;
 		Rml::Context* m_pContext;
 
-		Horizon::SDL3::OpenglWindow* m_Window;
+		Horizon::SDL3::OpenGLWindow* m_Window;
 
 		Rml::SystemInterface* m_SystemInterface;
 		Rml::RenderInterface* m_RenderInterface;

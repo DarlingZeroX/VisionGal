@@ -1,3 +1,8 @@
+// Copyright (c) 2025 梦旅缘心
+// This file is part of VisionGal and is licensed under the MIT License.
+// For the latest information, see https://github.com/DarlingZeroX/VisionGal
+// See the LICENSE file in the project root for details.
+
 #include "NewProjectUITask.h"
 #include "VGLauncherData.h"
 #include "ProjectCreator.h"
@@ -15,10 +20,18 @@ namespace VisionGal::Editor
 		auto& data = VGLauncherData::GetLauncherData();
 
 		// 尝试恢复上次创建项目的目录
-		if (data.LastProjectCreateDirectory.empty() == false)
+		if (data.GetLastProjectCreateDirectory().empty() == false)
 		{
-			m_ProjectLocation = data.LastProjectCreateDirectory;
+			m_ProjectLocation = data.GetLastProjectCreateDirectory();
 		}
+	}
+
+	void NewProjectUITask::TipText(const std::string& tip)
+	{
+		ImGui::TextColored(
+			ImVec4(0.7f, 0.7f, 0.7f, 1.0f),
+			EditorText{ tip }.c_str()
+		);
 	}
 
 	// 渲染新建项目的UI界面
@@ -51,11 +64,7 @@ namespace VisionGal::Editor
 			// 检查项目名称是否为空
 			if (m_ProjectName.empty())
 			{
-				ImGui::TextColored(
-					ImVec4(0.7f, 0.7f, 0.7f, 1.0f), 
-					EditorText{ "Project name cannot be empty!" }.c_str()
-				);
-
+				TipText("Project name cannot be empty!");
 				isValidProject = false;
 			}
 
@@ -73,11 +82,7 @@ namespace VisionGal::Editor
 			// 检查项目路径是否合法
 			if (m_ProjectLocation.empty() || !std::filesystem::exists(m_ProjectLocation))
 			{
-				ImGui::TextColored(
-					ImVec4(0.7f, 0.7f, 0.7f, 1.0f), 
-					EditorText{ "Invalid project location!" }.c_str()
-				);
-
+				TipText("Invalid project location!");
 				isValidProject = false;
 			}
 
@@ -85,11 +90,7 @@ namespace VisionGal::Editor
 			std::filesystem::path path = m_ProjectLocation;
 			if (std::filesystem::exists(path / m_ProjectName))
 			{
-				ImGui::TextColored(
-					ImVec4(0.7f, 0.7f, 0.7f, 1.0f),
-					EditorText{ "The project already exists!" }.c_str()
-				);
-
+				TipText("The project already exists!");
 				isValidProject = false;
 			}
 
@@ -100,7 +101,7 @@ namespace VisionGal::Editor
 				{
 					CreateProject();
 					hasChoice = true;
-					data.LastProjectCreateDirectory = m_ProjectLocation;
+					data.SetLastProjectCreateDirectory(m_ProjectLocation);
 					ImGui::CloseCurrentPopup();
 				}
 			}
@@ -110,7 +111,7 @@ namespace VisionGal::Editor
 			if (ImGui::Button(EditorText{ "Cancel" }.c_str(), ImVec2(120, 0)))
 			{
 				hasChoice = true;
-				data.LastProjectCreateDirectory = m_ProjectLocation;
+				data.SetLastProjectCreateDirectory( m_ProjectLocation );
 				ImGui::CloseCurrentPopup();
 			}
 
@@ -119,23 +120,22 @@ namespace VisionGal::Editor
 
 		// 用户已做出选择，标记任务完成
 		if (hasChoice)
-		{
 			context.IsFinished = true;
-		}
 	}
 
 	// 打开文件夹选择对话框，选择项目存储路径
-	void NewProjectUITask::OpenProjectLocationDialog()
+	bool NewProjectUITask::OpenProjectLocationDialog()
 	{
 		auto& data = VGLauncherData::GetLauncherData();
 
-		auto root = data.LastProjectCreateDirectory;
+		auto root = data.GetLastProjectCreateDirectory();
 		auto selection = pfd::select_folder(EditorText{ "Open Project" }.c_str(), root).result();
 
 		if (selection.empty())
-			return;
+			return false;
 
 		m_ProjectLocation = selection;
+		return true;
 	}
 
 	// 创建项目并弹出通知
@@ -143,13 +143,14 @@ namespace VisionGal::Editor
 	{
 		auto& data = VGLauncherData::GetLauncherData();
 
-		ProjectCreator creator;
-		creator.ProjectName = m_ProjectName;
-		creator.ProjectPath = m_ProjectLocation;
+		ProjectCreateConfig config;
+		config.ProjectName = m_ProjectName;
+		config.ProjectPath = m_ProjectLocation;
 
-		if (creator.CreateProject())
+		// 尝试创建项目并根据结果弹出通知
+		if (ProjectCreator::CreateProject(config))
 		{
-			data.LastProjectCreateDirectory = creator.ProjectPath;
+			data.SetLastProjectCreateDirectory(config.ProjectPath);
 			ImGuiEx::PushNotification({ ImGuiExToastType::Info, EditorText{ "Create project successfully" }.c_str() });
 		}
 		else
@@ -157,4 +158,5 @@ namespace VisionGal::Editor
 			ImGuiEx::PushNotification({ ImGuiExToastType::Error, EditorText{ "Create project failed" }.c_str() });
 		}
 	}
+
 }

@@ -14,7 +14,7 @@ namespace VisionGal
 		return uiSystem;
 	}
 
-	Horizon::SDL3::OpenglWindow* CoreGameEngineContext::GetWindow()
+	Horizon::SDL3::OpenGLWindow* CoreGameEngineContext::GetWindow()
 	{
 		return window;
 	}
@@ -233,7 +233,7 @@ namespace VisionGal
 		m_RenderEngine->OnRender();
 	}
 
-	void CoreGameEngine::Initialize(Horizon::SDL3::OpenglWindow* window)
+	void CoreGameEngine::Initialize(Horizon::SDL3::OpenGLWindow* window)
 	{
 		// 创建视口
 		m_Viewport = GetViewportManager()->NewViewport({ window->WindowWidth(), window->WindowHeight() });

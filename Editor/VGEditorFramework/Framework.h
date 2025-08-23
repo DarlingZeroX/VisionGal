@@ -2,6 +2,7 @@
 #include "Include/PanelManager.h"
 
 #include "Include/EditorCore/Localization.h"
+#include "Include/EditorCore/EditorCore.h"
 
 #include "Include/MainEditor/MainPanel.h"
 #include "Include/MainEditor/MenuBar.h"

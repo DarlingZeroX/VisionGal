@@ -27,6 +27,7 @@ H_BEGIN_ROOT_NAMESPACE
 	virtual void SetFullscreen(bool fullscreen) = 0;
 
 	virtual int ProcessMessages() noexcept = 0;
+	virtual bool SwapWindow() = 0;
 	virtual void Close() = 0;
 	virtual void Clear() noexcept = 0;
 

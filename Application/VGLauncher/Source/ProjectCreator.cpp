@@ -1,3 +1,8 @@
+// Copyright (c) 2025 梦旅缘心
+// This file is part of VisionGal and is licensed under the MIT License.
+// For the latest information, see https://github.com/DarlingZeroX/VisionGal
+// See the LICENSE file in the project root for details.
+
 #include "ProjectCreator.h"
 #include <filesystem>
 
@@ -6,10 +11,10 @@
 namespace VisionGal::Editor
 {
 	// 创建新项目的函数
-	bool ProjectCreator::CreateProject()
+	bool ProjectCreator::CreateProject(const ProjectCreateConfig& config)
 	{
 		// 检查项目名称和路径是否为空
-		if (ProjectName.empty() || ProjectPath.empty())
+		if (config.ProjectName.empty() || config.ProjectPath.empty())
 		{
 			return false;
 		}
@@ -18,8 +23,8 @@ namespace VisionGal::Editor
 		auto& data = VGLauncherData::GetLauncherData();
 
 		// 构建项目的完整路径
-		std::filesystem::path projectPath(ProjectPath);
-		projectPath /= ProjectName;
+		std::filesystem::path projectPath(config.ProjectPath);
+		projectPath /= config.ProjectName;
 
 		// 创建项目主目录
 		std::filesystem::create_directories(projectPath);
@@ -32,11 +37,19 @@ namespace VisionGal::Editor
 		std::filesystem::path projectSettings = projectPath / "ProjectSettings";
 		std::filesystem::create_directories(projectSettings);
 
+		// 创建 Editor 目录
+		std::filesystem::path editorPath = projectPath / "Editor";
+		std::filesystem::create_directories(editorPath);
+
+		// 创建 Intermediate 目录
+		std::filesystem::path intermediatePath = projectPath / "Intermediate";
+		std::filesystem::create_directories(intermediatePath);
+
 		// 创建项目项并添加到启动器数据中
 		VGProjectItem project;
-		project.Name = ProjectName;
+		project.Name = config.ProjectName;
 		project.Path = projectPath.string();
-		data.Projects.emplace_back(project);
+		data.AddProject(project);
 
 		// 返回创建成功
 		return true;

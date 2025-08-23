@@ -1,18 +1,24 @@
+// Copyright (c) 2025 梦旅缘心
+// This file is part of VisionGal and is licensed under the MIT License.
+// For the latest information, see https://github.com/DarlingZeroX/VisionGal
+// See the LICENSE file in the project root for details.
+
 #include "VGLauncherData.h"
 #include "Include/VGLauncher.h"
+#include <VGPackage/Include/PackageFileSystem.h>
 #include <VGEngine/Include/Core/VFS.h>
 #include <VGEngine/Include/Engine/VGEngine.h>
 #include <VGEditorFramework/Include/EditorCore/EditorCore.h>
-#include <VGPackage/Include/PackageFileSystem.h>
 
 /// @brief 表示启动器虚拟文件系统（VFS）中各类资源和设置的路径。
 struct LauncherVFSPath
 {
-	std::string assets;           // 项目的资源目录路径
-	std::string editor;           // 编辑器的资源目录路径
-	std::string engine;           // 引擎核心的目录路径
+	std::string assets;           // 项目的资产目录路径
 	std::string projectSettings;  // 项目设置文件路径
 	std::string projectIntermediate; // 项目中间文件路径
+
+	std::string editor;           // 编辑器的资产目录路径
+	std::string engine;           // 引擎的资产目录路径
 };
 
 /// @brief 初始化虚拟文件系统（VFS）。
@@ -46,7 +52,7 @@ int main()
 {
 	using namespace VisionGal;
 
-	// 获取CMake根目录
+	// 获取CMake项目根目录
 	std::string editorProjectRootDir;
 #ifdef EDITOR_PROJECT_ROOT_DIR
 	std::cout << "Engine Project root is: " << EDITOR_PROJECT_ROOT_DIR << std::endl;

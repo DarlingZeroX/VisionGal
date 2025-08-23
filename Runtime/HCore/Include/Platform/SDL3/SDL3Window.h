@@ -69,6 +69,7 @@ namespace Horizon::SDL3
 		void Close() override;
 
 		int ProcessMessages() noexcept override;
+		bool SwapWindow() override;
 		int ProcessEvent(const SDL_Event& event);
 		void Clear() noexcept override;
 		void AddLayer(std::unique_ptr<Layer>&& layer) noexcept override;
@@ -81,6 +82,8 @@ namespace Horizon::SDL3
 	protected:
 		void SetSDLWindowPtr(SDL_Window* ptr);
 		void InitialMouseKeyboard();
+
+	protected:
 		std::string m_OpenGLVersion;
 	private:
 		SDL_Window* m_pWindow;
@@ -95,11 +98,12 @@ namespace Horizon::SDL3
 		bool m_OnResizeWindowMode = false;
 	};
 
-	struct OpenglWindow: public Window
+	struct CROSS_PLATFORM_API OpenGLWindow: public Window
 	{
-		~OpenglWindow() override = default;
+		~OpenGLWindow() override = default;
 
 		virtual SDL_GLContext GetContext() = 0;
+		bool SwapWindow() override;
 	};
 }
 

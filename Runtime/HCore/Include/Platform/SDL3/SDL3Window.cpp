@@ -40,6 +40,11 @@ namespace Horizon::SDL3
 		m_Mouse->SetWindow(this);
 	}
 
+	bool OpenGLWindow::SwapWindow()
+	{
+		return SDL_GL_SwapWindow(GetSDLWindow());
+	}
+
 	Window::~Window()
 	{
 		if (m_pWindow != nullptr)
@@ -259,7 +264,7 @@ namespace Horizon::SDL3
 	int g_mouseDownY = -1;
 	int g_windowInitialWidth = 0;
 	int g_windowInitialHeight = 0;
-	// ´°¿ÚÓÒÏÂ½ÇÓÃÓÚµ÷Õû´óĞ¡µÄÇøÓò·¶Î§£¨¿ÉÒÔ¸ù¾İÊµ¼ÊÇé¿öµ÷Õû´óĞ¡£©
+	// çª—å£å³ä¸‹è§’ç”¨äºè°ƒæ•´å¤§å°çš„åŒºåŸŸèŒƒå›´ï¼ˆå¯ä»¥æ ¹æ®å®é™…æƒ…å†µè°ƒæ•´å¤§å°ï¼‰
 	const int RESIZE_HANDLE_SIZE = 20;
 
 	int Window::ProcessEvent(const SDL_Event& event)
@@ -278,7 +283,7 @@ namespace Horizon::SDL3
 				return true;
 		}
 
-		// ²»ÊÇ±¾´°¿ÚÊÂ¼ş
+		// ä¸æ˜¯æœ¬çª—å£äº‹ä»¶
 		if (!IsCurrentWindowEvent(event.window.windowID))
 			return true;
 
@@ -337,9 +342,9 @@ namespace Horizon::SDL3
 			return false;
 			break;
 		case SDL_EVENT_MOUSE_BUTTON_DOWN:
-			// Êó±ê°´ÏÂÊÂ¼ş
+			// é¼ æ ‡æŒ‰ä¸‹äº‹ä»¶
 			if (event.button.button == SDL_BUTTON_LEFT) {
-				// ÕâÀï¼òµ¥ÅĞ¶ÏÊó±êÊÇ·ñÔÚ´°¿ÚÓÒÏÂ½ÇÇøÓò°´ÏÂ£¬ÓÃÓÚµ÷Õû´óĞ¡
+				// è¿™é‡Œç®€å•åˆ¤æ–­é¼ æ ‡æ˜¯å¦åœ¨çª—å£å³ä¸‹è§’åŒºåŸŸæŒ‰ä¸‹ï¼Œç”¨äºè°ƒæ•´å¤§å°
 				int windowX, windowY;
 				SDL_GetWindowPosition(m_pWindow, &windowX, &windowY);
 				int windowWidth, windowHeight;
@@ -357,7 +362,7 @@ namespace Horizon::SDL3
 			}
 			break;
 		case SDL_EVENT_MOUSE_BUTTON_UP:
-			// Êó±êËÉ¿ªÊÂ¼ş£¬ÖØÖÃÏà¹Ø¼ÇÂ¼±äÁ¿
+			// é¼ æ ‡æ¾å¼€äº‹ä»¶ï¼Œé‡ç½®ç›¸å…³è®°å½•å˜é‡
 			if (event.button.button == SDL_BUTTON_LEFT) {
 				g_mouseDownX = -1;
 				g_mouseDownY = -1;
@@ -366,7 +371,7 @@ namespace Horizon::SDL3
 			}
 			break;
 		case SDL_EVENT_MOUSE_MOTION:
-			// Êó±êÒÆ¶¯ÊÂ¼ş£¬µ±Êó±ê°´ÏÂÇÒÔÚÓÒÏÂ½ÇÇøÓòÊ±¸Ä±ä´°¿Ú´óĞ¡
+			// é¼ æ ‡ç§»åŠ¨äº‹ä»¶ï¼Œå½“é¼ æ ‡æŒ‰ä¸‹ä¸”åœ¨å³ä¸‹è§’åŒºåŸŸæ—¶æ”¹å˜çª—å£å¤§å°
 			if (g_mouseDownX != -1 && g_mouseDownY != -1) {
 				int windowX, windowY;
 				SDL_GetWindowPosition(m_pWindow, &windowX, &windowY);
@@ -440,6 +445,11 @@ namespace Horizon::SDL3
 			return true;
 		}
 
+		return true;
+	}
+
+	bool Window::SwapWindow()
+	{
 		return true;
 	}
 

@@ -108,7 +108,7 @@ namespace VisionGal
 		return &s_UISystem;
 	}
 
-	int UISystem::Initialize(Horizon::SDL3::OpenglWindow* window)
+	int UISystem::Initialize(Horizon::SDL3::OpenGLWindow* window)
 	{
 		m_Window = window;
 		m_Window->AddLayer(this);
@@ -126,7 +126,7 @@ namespace VisionGal
 		return  dynamic_cast<RenderInterface_GL3*>(interface);
 	}
 
-	int UISystem::Initialize(Horizon::SDL3::OpenglWindow* window, Viewport* viewport)
+	int UISystem::Initialize(Horizon::SDL3::OpenGLWindow* window, Viewport* viewport)
 	{
 		Initialize(window);
 
@@ -311,7 +311,7 @@ namespace VisionGal
 		m_pContext->Update();
 	}
 
-	bool UISystem::InitializeUISystem(Horizon::SDL3::OpenglWindow* window)
+	bool UISystem::InitializeUISystem(Horizon::SDL3::OpenGLWindow* window)
 	{
 
 		if (!RmlGL3::Initialize())

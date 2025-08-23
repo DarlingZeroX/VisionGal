@@ -14,7 +14,7 @@ namespace VisionGal
         ~CoreGameEngineContext() override = default;
 
         IUISystem* GetUISystem() override;
-        Horizon::SDL3::OpenglWindow* GetWindow() override;
+        Horizon::SDL3::OpenGLWindow* GetWindow() override;
         Viewport* GetViewport() override;
 
         // 在渲染引擎设置各种渲染状态之前，添加渲染回调
@@ -26,7 +26,7 @@ namespace VisionGal
         void ExecuteAfterRenderCallbacks(OpenGL::RenderTarget2D* rt) override;
 
         IUISystem* uiSystem = nullptr;
-        Horizon::SDL3::OpenglWindow* window = nullptr;
+        Horizon::SDL3::OpenGLWindow* window = nullptr;
         Viewport* viewport = nullptr;
 
         std::unordered_map<String, std::function<void(OpenGL::RenderTarget2D*)>> beforeRenderCallbacks;
@@ -46,7 +46,7 @@ namespace VisionGal
         void OnUpdate(float deltaTime) override;
         void OnRender() override;
 
-        void Initialize(Horizon::SDL3::OpenglWindow* window);
+        void Initialize(Horizon::SDL3::OpenGLWindow* window);
         Viewport* GetViewport() const { return m_Viewport; }
 
 		void SetRenderFinalResultToScreen(bool enable);

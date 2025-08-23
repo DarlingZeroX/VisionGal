@@ -1,25 +1,22 @@
+// Copyright (c) 2025 梦旅缘心
+// This file is part of VisionGal and is licensed under the MIT License.
+// For the latest information, see https://github.com/DarlingZeroX/VisionGal
+// See the LICENSE file in the project root for details.
+
+#include "VGLauncherData.h"
 #include "VGLauncher.h"
 #include "MainWindow.h"
 #include <HCore/Include/System/HFileSystem.h>
 #include <VGImgui/IncludeImGuiEx.h>
 #include <VGImgui/Include/ImGuiLayer/SDL3Decorator.h>
-#include <VGImgui/Include/Imgui/imgui_impl_opengl3.h>
-#include <VGEditorFramework/Framework.h>
+#include <VGEngine/Include/Core/VFS.h>
 #include <VGEngine/Include/Engine/UISystem.h>
-#include "VGLauncherData.h"
-#include "VGEditorFramework/Include/EditorCore/EditorCore.h"
-#include "VGEngine/Include/Core/VFS.h"
+#include <VGEditorFramework/Framework.h>
 
 namespace VisionGal::Editor
 {
 	VGLauncher::VGLauncher()
-		:m_GameEngine(nullptr)
 	{
-	}
-
-	VGLauncher::~VGLauncher()
-	{
-
 	}
 	 
 	void VGLauncher::Initialize()
@@ -28,36 +25,30 @@ namespace VisionGal::Editor
 
 		// 初始化启动器窗口数据
 		auto editorName = "VisionGal Launcher";
-		auto windowWidth = editorConfig.EditorWindowWidth;
-		auto windowHeight = editorConfig.EditorWindowHeight;
+		if (editorConfig.EditorLanguage == "ZH-CN")
+			editorName = "VisionGal 启动器";
+
+		auto windowWidth = 1280;
+		auto windowHeight = 720;
 
 		// 创建启动器窗口
-		m_LauncherWindow = CreateRef<VGWindow>();
+		m_LauncherWindow = CreateScope<VGWindow>();
 		m_LauncherWindow->Initialize(editorName, windowWidth, windowHeight,true);
 
-		//m_GameEngine = CreateRef<CoreGameEngine>();
-		//m_GameEngine->Initialize(m_LauncherWindow.get());
-
 		// 添加ImGui Layer
-		AddImguiLayer();
+		AddImGuiLayer();
 		// 初始化编辑器UI
 		InitializeEditorUI();
 		// 初始化启动器面板
 		InitializeLauncherPanels();
 	}
 
-	void VGLauncher::AddApplicationLayer(IEngineApplicationLayer* layer)
-	{
-	}
-
 	void VGLauncher::InitializeLauncherPanels()
 	{
-		auto* editor = PanelManager::GetInstance();
+		auto* panelManager = PanelManager::GetInstance();
 
-		//auto mainWindow = CreateRef<EditorMainWindow>();
 		//editor->AddPanelWithID("EditorMenuBar", CreateRef<EditorMenuBar>());
-
-		editor->AddPanelWithID("LauncherMainWindow", CreateRef<VGLauncherMainWindow>());
+		panelManager->AddPanelWithID("LauncherMainWindow", CreateRef<VGLauncherMainWindow>());
 	}
 
 	void VGLauncher::InitializeEditorUI()
@@ -66,22 +57,19 @@ namespace VisionGal::Editor
 
 		// 设置本地语言
 		EditorLoadLanguage(editorConfig.EditorLanguage);
-
 		// 设置主题
 		EditorStyle::DarkTheme();
-
-		// 创建Imgui的UI任务执行器
-		ImGuiEx::ImTaskManager::CreateManager();
+		// 初始化ImGuiEx
+		ImGuiEx::Initialize();
 	}
 
-	void VGLauncher::AddImguiLayer()
+	void VGLauncher::AddImGuiLayer()
 	{
 		// 添加ImGui Layer
 		m_LauncherWindow->AddLayer(std::make_unique<ImGuiEx::Opengl3ImGuiWindowLayer>(m_LauncherWindow.get()));
-		m_ImguiOpengl3Layer = std::make_unique<ImguiOpengl3Layer>(m_LauncherWindow.get(), m_LauncherWindow->GetContext());
+		m_ImGuiOpenGL3Layer = std::make_unique<ImguiOpengl3Layer>(m_LauncherWindow.get(), m_LauncherWindow->GetContext());
 
 		ImGuiIO& io = ImGui::GetIO();
-
 		auto& editorConfig = EditorCore::GetEditorPreferences().Editor;
 
 		// 读取中文字体
@@ -90,7 +78,6 @@ namespace VisionGal::Editor
 			ImFontConfig icons_config;
 			icons_config.FontDataOwnedByAtlas = false;
 
-			//io.Fonts->AddFontFromMemoryTTF(data->data(), data->size(), 17, &icons_config, ImGui::GetIO().Fonts->GetGlyphRangesChineseSimplifiedCommon());
 			io.Fonts->AddFontFromMemoryTTF(data->data(), data->size(), 20, &icons_config, ImGui::GetIO().Fonts->GetGlyphRangesChineseFull());
 
 			return 0;
@@ -117,19 +104,11 @@ namespace VisionGal::Editor
 
 	void VGLauncher::OnRender()
 	{
-		if (m_GameEngine)
-		{
-			m_GameEngine->OnRender();
-		}
+
 	}
 
 	void VGLauncher::OnUpdate(float deltaTime)
 	{
-		if (m_GameEngine)
-		{
-			m_GameEngine->OnUpdate(deltaTime);
-		}
-
 		PanelManager::GetInstance()->OnUpdate(deltaTime);
 	}
 
@@ -140,22 +119,20 @@ namespace VisionGal::Editor
 
 	void VGLauncher::OnGUI()
 	{
-		m_ImguiOpengl3Layer->BeginFrame();
+		m_ImGuiOpenGL3Layer->BeginFrame();
 		PanelManager::GetInstance()->OnGUI();
-		ImGuiEx::ImTaskManager::GetInstance().RenderUITask();
-		ImGuiEx::RenderNotifications();
-		m_ImguiOpengl3Layer->EndFrame();
+		ImGuiEx::Render();
+		m_ImGuiOpenGL3Layer->EndFrame();
 	}
 
 	void VGLauncher::OnApplicationUpdate(float deltaTime)
 	{
-		//glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		OnFixedUpdate();
 		OnUpdate(deltaTime);
 		OnRender();
 		OnGUI();
 
-		SDL_GL_SwapWindow(m_LauncherWindow->GetSDLWindow());
+		m_LauncherWindow->SwapWindow();
 	}
 
 	int VGLauncher::ProcessEvent(const SDL_Event& event)
