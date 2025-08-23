@@ -39,35 +39,21 @@ path-to-vcpkg 替换为你实际的vcpkg安装路径，例如：C:\vcpkg
 1.使用 VGLauncher 启动示例项目
 
 ## 目录结构
-VisionGal/
-
-├── Application/         # 应用程序模块
-
-│   ├── VGDesktopApplication/  # 桌面应用
-
-│   ├── VGLauncher/            # 启动器
-
-│   └── VGPackageTool/         # 打包工具
-
-├── Editor/              # 编辑器模块
-
-│   ├── VGEditor/              # 主编辑器
-
-│   └── VGEditorFramework/     # 编辑器框架
-
-├── Runtime/             # 运行时模块
-
-│   ├── HCore/                 # 核心系统
-
-│   ├── VGEngine/              # 引擎核心
-
-│   ├── VGImgui/               # ImGui 集成
-
-│   ├── VGLua/                 # Lua 脚本支持
-
-│   └── VGPackager/            # 资产打包库
-
-└── Resource/            # 资源文件
+VisionGal/  <br>
+├── Application/         # 应用程序模块 <br>
+│   ├── VGDesktopApplication/  # 桌面应用<br>
+│   ├── VGLauncher/            # 启动器<br>
+│   └── VGPackageTool/         # 打包工具<br>
+├── Editor/              # 编辑器模块<br>
+│   ├── VGEditor/              # 主编辑器<br>
+│   └── VGEditorFramework/     # 编辑器框架<br>
+├── Runtime/             # 运行时模块<br>
+│   ├── HCore/                 # 核心系统<br>
+│   ├── VGEngine/              # 引擎核心<br>
+│   ├── VGImgui/               # ImGui 集成<br>
+│   ├── VGLua/                 # Lua 脚本支持<br>
+│   └── VGPackager/            # 资产打包库<br>
+└── Resource/            # 资源文件<br>
 
 ## 贡献指南
 欢迎任何形式的贡献！如果您想为 VisionGal 做出贡献，请：
