@@ -72,9 +72,15 @@ namespace VisionGal::Editor
 		m_LauncherDataFilePath = "Data/VGLauncher/VGLauncherData.json";
 	}
 
-	void VGLauncherData::Load(VGLauncherData& data)
+	VGLauncherData::VGLauncherData(const std::filesystem::path& dataPath)
+	{
+		m_LauncherDataFilePath = dataPath;
+	}
+
+	bool VGLauncherData::Load(VGLauncherData& data)
 	{
 		/// @brief 从文件加载启动器数据
+		auto dataFilePath = data.m_LauncherDataFilePath;
 		std::string text;
 		if (Horizon::HFileSystem::ReadTextFromFile(data.m_LauncherDataFilePath, text))
 		{
@@ -82,6 +88,8 @@ namespace VisionGal::Editor
 			try {
 				nlohmann::json json = nlohmann::json::parse(text);
 				data = json.get<VGLauncherData>();
+				data.m_LauncherDataFilePath = dataFilePath;
+				return true;
 			}
 			catch (const nlohmann::json::parse_error& e) {
 
@@ -94,9 +102,11 @@ namespace VisionGal::Editor
 			// 移除无效的项目
 			data.RemoveInvalidProjects();
 		}
+
+		return false;
 	}
 
-	void VGLauncherData::Save(VGLauncherData& data)
+	bool VGLauncherData::Save(VGLauncherData& data)
 	{
 		// 如果目录不存在则创建
 		Horizon::HFileSystem::CreateDirectoryWhenNoExist("Data");
@@ -108,7 +118,7 @@ namespace VisionGal::Editor
 		std::string jsonStr = json.dump(2);
 
 		// 将 JSON 字符串写入文件
-		Horizon::HFileSystem::WriteTextToFile(data.m_LauncherDataFilePath, jsonStr);
+		return Horizon::HFileSystem::WriteTextToFile(data.m_LauncherDataFilePath, jsonStr);
 	}
 
 	void VGLauncherData::LoadLauncherData()

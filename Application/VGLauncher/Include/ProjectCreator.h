@@ -19,13 +19,6 @@ namespace VisionGal::Editor
 
 	struct ProjectCreator
 	{
-		ProjectCreator() = default;
-		ProjectCreator(const ProjectCreator&) = default;
-		ProjectCreator& operator=(const ProjectCreator&) = default;
-		ProjectCreator(ProjectCreator&&) noexcept = default;
-		ProjectCreator& operator=(ProjectCreator&&) noexcept = default;
-		~ProjectCreator() = default;
-
 		/// @brief 创建一个新项目。
 		/// @return 如果项目创建成功，则返回 true；否则返回 false。
 		static bool CreateProject(const ProjectCreateConfig& config);

@@ -17,7 +17,7 @@ int main(int argc, char* argv[])
 	std::locale::global(std::locale(".utf8"));  // C++标准库使用UTF-8
 
 	// 读取项目根目录
-	std::string projectRootDir = editorProjectRootDir + "/Projects/New Project";
+	std::string projectRootDir = editorProjectRootDir + "/Projects/Test Project";
 
 	Horizon::HFileSystem::CreateDirectoryWhenNoExist("Intermediate");
 

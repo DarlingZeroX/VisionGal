@@ -8,13 +8,13 @@ set(CMAKE_C_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-# 设置 Vcpkg 工具链文件
-#set(CMAKE_TOOLCHAIN_FILE "E:/vcpkg/scripts/buildsystems/vcpkg.cmake" CACHE STRING "")
-# 仅在用户没指定 CMAKE_TOOLCHAIN_FILE 时设置默认值
+# 设置 Vcpkg 工具链文件，仅在用户没指定 CMAKE_TOOLCHAIN_FILE 时设置默认值
 if(NOT CMAKE_TOOLCHAIN_FILE)
-    set(CMAKE_TOOLCHAIN_FILE "E:/vcpkg/scripts/buildsystems/vcpkg.cmake"
-        CACHE STRING "Vcpkg toolchain file")
+    set(CMAKE_TOOLCHAIN_FILE "E:/vcpkg/scripts/buildsystems/vcpkg.cmake" CACHE STRING "Vcpkg toolchain file")
 endif()
+
+# 启用测试选项
+option(ENABLE_TESTS "Enable building tests" OFF)
 
 project ("VisionGal" LANGUAGES C CXX)
 
@@ -31,6 +31,7 @@ set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 # 可执行文件目录
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
+########## 包含子项目 
 add_subdirectory ("Runtime/VGLua")
 add_subdirectory ("Runtime/HCore")
 add_subdirectory ("Runtime/VGPackage")
@@ -46,9 +47,22 @@ add_subdirectory ("Application/VGDesktopApplication")
 # 打包工具
 add_subdirectory ("Application/VGPackageTool")
 
-# 自动加载 Plugins 目录下所有子项目
-file(GLOB CHILDREN RELATIVE ${CMAKE_SOURCE_DIR}/Plugins ${CMAKE_SOURCE_DIR}/Plugins/*)
-foreach(child ${CHILDREN})
+########## 加载 Tests 目录下所有子测试项目
+if (ENABLE_TESTS)
+    enable_testing()
+
+    add_subdirectory("Tests/VGLauncherTest")
+    #file(GLOB TESTS_DIRS RELATIVE ${CMAKE_SOURCE_DIR}/Tests ${CMAKE_SOURCE_DIR}/Tests/*)
+    #foreach(child ${TESTS_DIRS})
+    #    if(IS_DIRECTORY "${CMAKE_SOURCE_DIR}/Tests/${child}")
+    #        add_subdirectory(${CMAKE_SOURCE_DIR}/Tests/${child})
+    #    endif()
+    #endforeach()
+endif()
+
+########## 自动加载 Plugins 目录下所有子项目
+file(GLOB PLUGINS_DIRS RELATIVE ${CMAKE_SOURCE_DIR}/Plugins ${CMAKE_SOURCE_DIR}/Plugins/*)
+foreach(child ${PLUGINS_DIRS})
     if(IS_DIRECTORY "${CMAKE_SOURCE_DIR}/Plugins/${child}")
         add_subdirectory(${CMAKE_SOURCE_DIR}/Plugins/${child})
     endif()

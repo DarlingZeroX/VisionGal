@@ -7,6 +7,8 @@
 #include <filesystem>
 
 #include "VGLauncherData.h"
+#include "HCore/Include/Math/HVector.h"
+#include "HCore/Include/System/HFileSystem.h"
 
 namespace VisionGal::Editor
 {
@@ -15,9 +17,16 @@ namespace VisionGal::Editor
 	{
 		// 检查项目名称和路径是否为空
 		if (config.ProjectName.empty() || config.ProjectPath.empty())
-		{
 			return false;
-		}
+
+		// 检查项目路径是否存在
+		if (Horizon::HFileSystem::ExistsDirectory(config.ProjectPath) == false)
+			return false;
+
+		// 检查同名项目是否已存在
+		std::filesystem::path path = config.ProjectPath;
+		if (std::filesystem::exists(path / config.ProjectName))
+			return false;
 
 		// 获取启动器数据的单例实例
 		auto& data = VGLauncherData::GetLauncherData();

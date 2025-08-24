@@ -27,18 +27,21 @@ namespace VisionGal::Editor
 		friend void from_json(const nlohmann::json& j, VGLauncherData& data);
 
 		VGLauncherData();
+		VGLauncherData(const std::filesystem::path& dataPath);
 		VGLauncherData(const VGLauncherData&) = default;
 		VGLauncherData& operator=(const VGLauncherData&) = default;
 		VGLauncherData(VGLauncherData&&) noexcept = default;
 		VGLauncherData& operator=(VGLauncherData&&) noexcept = default;
 		~VGLauncherData() = default;
 
-		/// @brief 加载启动器数据
-		/// @param settings 
-		static void Load(VGLauncherData& settings);
+		/// @brief 从文件加载启动器数据
+		/// @param settings 启动器数据
+		/// @return 是否加载成功
+		static bool Load(VGLauncherData& settings);
 		/// @brief 保存启动器数据
-		/// @param settings 
-		static void Save(VGLauncherData& settings);
+		/// @param settings 启动器数据
+		/// @return 是否保存成功
+		static bool Save(VGLauncherData& settings);
 
 		/// @brief 加载启动器数据
 		static void LoadLauncherData();
