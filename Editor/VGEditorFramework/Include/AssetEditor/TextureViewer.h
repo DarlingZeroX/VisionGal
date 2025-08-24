@@ -1,5 +1,4 @@
 #pragma once
-#include "../EditorComponents/PanelInterface.h"
 #include <HCore/Include/Asset/HAsset.h>
 #include <VGImgui/IncludeImGuiEx.h>
 #include <VGEngine/Include/Resource/Texture2D.h>
@@ -48,7 +47,7 @@ namespace VisionGal::Editor
 		void DrawTopMenu();
 		void ColorChannelButton(const ChannelButtonConfig& config);
 
-		void ScaleImage(float offest);
+		void ScaleImage(float offset);
 	private:
 		VGPath m_Path;
 		Ref<Texture2D> m_ImageTexture;

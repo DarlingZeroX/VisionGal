@@ -14,7 +14,7 @@ namespace VisionGal
 
 	AssetManager* GetAssetManager()
 	{
-		return AssetManager::Get();
+		return AssetManager::GetInstance();
 	} 
 
 	SceneManager* GetSceneManager()

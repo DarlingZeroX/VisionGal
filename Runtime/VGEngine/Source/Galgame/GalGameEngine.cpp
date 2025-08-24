@@ -254,7 +254,7 @@ namespace VisionGal::GalGame
 			std::thread thread([path, this]()
 				{
 					String resPath = Core::GetAssetsPathVFS() + path;
-					AssetManager::Get()->LoadAsset<TextureAsset>(resPath);
+					AssetManager::GetInstance()->LoadAsset<TextureAsset>(resPath);
 				});
 
 			thread.detach();

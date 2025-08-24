@@ -192,9 +192,9 @@ namespace VisionGal::Editor
 		ImGui::EndMenuBar();
 	}
 
-	void TextureViewer::ScaleImage(float offest)
+	void TextureViewer::ScaleImage(float offset)
 	{
-		m_ViewData.Scale += offest;
+		m_ViewData.Scale += offset;
 		m_ViewData.Scale = std::max(m_ViewData.Scale, 0.1f);
 	}
 }

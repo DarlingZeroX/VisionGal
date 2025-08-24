@@ -89,6 +89,9 @@ namespace VisionGal::Editor
 				nlohmann::json json = nlohmann::json::parse(text);
 				data = json.get<VGLauncherData>();
 				data.m_LauncherDataFilePath = dataFilePath;
+
+				// 移除无效的项目
+				data.RemoveInvalidProjects();
 				return true;
 			}
 			catch (const nlohmann::json::parse_error& e) {
@@ -98,9 +101,6 @@ namespace VisionGal::Editor
 			{
 
 			}
-
-			// 移除无效的项目
-			data.RemoveInvalidProjects();
 		}
 
 		return false;

@@ -96,10 +96,6 @@ namespace VisionGal::Editor
 		ImGui::Dummy(ImVec2(0, 25));
 
 		ImVec2 buttonSize = ImVec2(ImGui::GetContentRegionAvail().x, 40.f);
-		if (ImGui::Button(EditorText{ "Test"  }.c_str(), buttonSize))
-		{
-			VGPackageTool::TestPackage();
-		}
 
 		if (ImGui::Button(EditorText{ "Packaging Engine Editor Resources" }.c_str(), buttonSize))
 		{

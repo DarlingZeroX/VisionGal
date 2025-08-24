@@ -71,19 +71,24 @@ namespace VisionGal
 
 	VGObjectPtr TextureResourceManager::StaticLoadObject(const String& path)
 	{
-		if (m_CachedTextures.find(path) != m_CachedTextures.end())
-			return m_CachedTextures[path];
+		// 检查文件是否过期，如果没有过期则查找缓存的纹理
+		if (GetAssetManager()->IsExpiredAsset(path) == false)
+		{
+			if (m_CachedTextures.contains(path))
+				return m_CachedTextures[path];
+		}
 
+		// 加载纹理资源
 		Ref<TextureAsset> asset = GetAssetManager()->LoadAsset<TextureAsset>(path);
 
 		if (asset == nullptr)
-		{
 			return nullptr;
-		}
 
+		// 创建渲染纹理
 		auto texture = CreateRenderTexture(*asset.get());
 		texture->SetResourcePath(path);
 
+		// 缓存纹理
 		m_CachedTextures[path] = texture;
 
 		return texture;
@@ -104,19 +109,12 @@ namespace VisionGal
 
 	VGObjectPtr VideoResourceManager::StaticLoadObject(const String& path)
 	{
-		//if (m_CachedVideos.find(path) != m_CachedVideos.end())
-		//	return m_CachedVideos[path];
-
 		Ref<VideoAsset> asset = GetAssetManager()->LoadAsset<VideoAsset>(path, false);
 		
 		if (asset == nullptr)
-		{
 			return nullptr;
-		}
 
 		asset->videoClip->SetResourcePath(path);
-		
-		//m_CachedVideos[path] = asset->videoClip;
 
 		return asset->videoClip;
 	}
@@ -139,9 +137,7 @@ namespace VisionGal
 		Ref<AudioAsset> asset = GetAssetManager()->LoadAsset<AudioAsset>(path, false);
 
 		if (asset == nullptr)
-		{
 			return nullptr;
-		}
 
 		asset->audioClip->SetResourcePath(path);
 

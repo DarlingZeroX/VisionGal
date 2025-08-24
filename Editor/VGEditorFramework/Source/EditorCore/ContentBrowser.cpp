@@ -277,7 +277,7 @@ namespace VisionGal {
 		}
 
 		// 文件 File
-		AssetManager::Get()->RemoveAsset(item.Path);
+		AssetManager::GetInstance()->RemoveAsset(item.Path);
 		RefreshDirectory();
 	}
 

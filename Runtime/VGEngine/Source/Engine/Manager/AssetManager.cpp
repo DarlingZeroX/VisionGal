@@ -1,11 +1,14 @@
+// Copyright (c) 2025 æ¢¦æ—…ç¼˜å¿ƒ
+// This file is part of VisionGal and is licensed under the MIT License.
+// For the latest information, see https://github.com/DarlingZeroX/VisionGal
+// See the LICENSE file in the project root for details.
+
+#include "Core/VFS.h"
 #include "Engine/Manager/AssetManager.h"
 #include "Asset/TextureAsset.h"
 #include "Asset/VideoAsset.h"
-#include <time.h>
-
 #include "Asset/AudioAsset.h"
-#include "Core/VFS.h"
-#include "HCore/Include/System/HFileSystem.h"
+#include <HCore/Include/System/HFileSystem.h>
 
 namespace VisionGal
 {
@@ -16,7 +19,7 @@ namespace VisionGal
 		RegisterAssetLoader(typeid(AudioAsset), new AudioAssetLoader());
 	}
 
-	AssetManager* AssetManager::Get()
+	AssetManager* AssetManager::GetInstance()
 	{
 		static AssetManager manager;
 
@@ -24,78 +27,110 @@ namespace VisionGal
 	}
 
 
+	bool AssetManager::IsExpiredAsset(const String& path)
+	{
+		// å…ˆä»ç¼“å­˜ä¸­æŸ¥æ‰¾èµ„äº§
+		auto it = m_AssetMap.find(path);
+		if (it != m_AssetMap.end())
+		{
+			if (it->second.HasLastWriteTime == false)
+				return false;
+
+			auto absPath = VFS::GetInstance()->AbsolutePath(path);
+			if (Horizon::HFileSystem::ExistsFile(absPath))
+			{
+				if (it->second.LastWriteTime != std::filesystem::last_write_time(absPath))
+					return true;
+			}
+		}
+
+		return false;
+	}
+
 	bool AssetManager::ExistLoader(const type_info& typeInfo)
 	{
 		return m_AssetLoaders.find(&typeInfo) != m_AssetLoaders.end();
 	}
 	
-	Ref<VGAsset> AssetManager::LoadAsset(const type_info& typeInfo, String path, bool cache)
+	Ref<VGAsset> AssetManager::LoadAsset(const type_info& typeInfo, const String& path, bool cache)
 	{
 		Ref<VGAsset> asset = nullptr;
+		//String cleanPath = Horizon::HFileSystem::ToUnixPath(path);
+		const bool isExpiredAsset = IsExpiredAsset(path);
 
-		// µÚÒ»½×¶Î£º¼ì²é»º´æ»òµÈ´ı¼ÓÔØ
+		// ç¬¬ä¸€é˜¶æ®µï¼šæ£€æŸ¥ç¼“å­˜æˆ–ç­‰å¾…åŠ è½½
 		{
 			std::unique_lock<std::mutex> lock(m_ReadMutex);
 
-			// ÏÈ´Ó»º´æÖĞ²éÕÒ×Ê²ú
+			// å…ˆä»ç¼“å­˜ä¸­æŸ¥æ‰¾èµ„äº§
 			auto it = m_AssetMap.find(path);
-			if (it != m_AssetMap.end())
+			if (it != m_AssetMap.end() && isExpiredAsset == false)
 			{
-				asset = it->second;
+				asset = it->second.Asset;
 				return asset;
 			}
 
-			// Èç¹ûÕıÔÚ¼ÓÔØ£¬µÈ´ıÍê³É
+			// å¦‚æœæ­£åœ¨åŠ è½½ï¼Œç­‰å¾…å®Œæˆ
 			if (m_LoadingAssets.find(path) != m_LoadingAssets.end())
 			{
 				m_LoadingCV.wait(lock, [this, &path] {
 					return m_LoadingAssets.find(path) == m_LoadingAssets.end();
 					});
 
-				// µÈ´ıºóÔÙ´Î¼ì²é»º´æ
+				// ç­‰å¾…åå†æ¬¡æ£€æŸ¥ç¼“å­˜
 				it = m_AssetMap.find(path);
-				if (it != m_AssetMap.end())
+				if (it != m_AssetMap.end() && isExpiredAsset == false)
 				{
-					asset = it->second;
+					asset = it->second.Asset;
 					return asset;
 				}
 			}
 
-			// ±ê¼Ç×ÊÔ´ÕıÔÚ¼ÓÔØ
+			// æ ‡è®°èµ„æºæ­£åœ¨åŠ è½½
 			m_LoadingAssets.insert(path);
 		}
 
-		// µÚ¶ş½×¶Î£º¼ÓÔØ×ÊÔ´£¨²»ÔÚËøµÄ±£»¤ÏÂ£©
+		// ç¬¬äºŒé˜¶æ®µï¼šåŠ è½½èµ„æºï¼ˆä¸åœ¨é”çš„ä¿æŠ¤ä¸‹ï¼‰
 		bool loadSuccessful = false;
 		try {
-			// ÕÒµ½×Ê²ú·ÃÎÊÆ÷
+			// æ‰¾åˆ°èµ„äº§è®¿é—®å™¨
 			auto loader = m_AssetLoaders.find(&typeInfo);
 			if (loader == m_AssetLoaders.end()) {
 				throw std::runtime_error("Asset loader not found");
 			}
 
-			// ¶ÁÈ¡×Ê²ú
+			// è¯»å–èµ„äº§
 			loader->second->Read(path, asset);
 			loadSuccessful = (asset != nullptr);
 		}
 		catch (...) {
 			loadSuccessful = false;
-			// Òì³£»áÔÚºóĞøÊÍ·ÅËøÊ±´¦Àí
+			// å¼‚å¸¸ä¼šåœ¨åç»­é‡Šæ”¾é”æ—¶å¤„ç†
 		}
 
-		// µÚÈı½×¶Î£º¸üĞÂ»º´æ²¢Í¨ÖªµÈ´ıÕß
+		// ç¬¬ä¸‰é˜¶æ®µï¼šæ›´æ–°ç¼“å­˜å¹¶é€šçŸ¥ç­‰å¾…è€…
 		{
 			std::lock_guard<std::mutex> lock(m_ReadMutex);
 
-			// ´Ó¼ÓÔØÁĞ±íÖĞÒÆ³ı
+			// ä»åŠ è½½åˆ—è¡¨ä¸­ç§»é™¤
 			m_LoadingAssets.erase(path);
 
-			// Èç¹û¼ÓÔØ³É¹¦ÇÒ»º´æÖĞÃ»ÓĞ¸Ã×ÊÔ´£¬ÔòÌí¼Óµ½»º´æ
-			if (cache && loadSuccessful && m_AssetMap.find(path) == m_AssetMap.end()) {
-				m_AssetMap[path] = asset;
+			// å¦‚æœåŠ è½½æˆåŠŸä¸”éœ€è¦ç¼“å­˜ï¼Œåˆ™æ·»åŠ åˆ°ç¼“å­˜
+			if (cache && loadSuccessful)
+			{
+				m_AssetMap[path].Asset = asset;
+				m_AssetMap[path].Path = path;
+
+				// ä¿å­˜æ–‡ä»¶æœ€åä¿®æ”¹æ—¶é—´
+				auto absPath = VFS::GetInstance()->AbsolutePath(path);
+				if (Horizon::HFileSystem::ExistsFile(absPath))
+				{
+					m_AssetMap[path].LastWriteTime = std::filesystem::last_write_time(absPath);
+					m_AssetMap[path].HasLastWriteTime = true;
+				}
 			}
 
-			// Í¨ÖªËùÓĞµÈ´ıÕß×ÊÔ´×´Ì¬ÒÑ¸üĞÂ
+			// é€šçŸ¥æ‰€æœ‰ç­‰å¾…è€…èµ„æºçŠ¶æ€å·²æ›´æ–°
 			m_LoadingCV.notify_all();
 		}
 
@@ -107,14 +142,14 @@ namespace VisionGal
 		Ref<VGAsset> asset = nullptr;
 		std::lock_guard<std::mutex> lock(m_ReadMutex);
 
-		// ÏÈ´Ó»º´æÖĞ²éÕÒ×Ê²ú
+		// å…ˆä»ç¼“å­˜ä¸­æŸ¥æ‰¾èµ„äº§
 		if (m_AssetMap.find(path) != m_AssetMap.end())
 		{
 			asset = m_AssetMap[path];
 			return asset;
 		}
 
-		// ÊÇ·ñÕıÔÚ¼ÓÔØ
+		// æ˜¯å¦æ­£åœ¨åŠ è½½
 		while (m_LoadingAssets.find(path) != m_LoadingAssets.end())
 		{
 			std::this_thread::sleep_for(std::chrono::microseconds(10));
@@ -122,21 +157,21 @@ namespace VisionGal
 
 		m_LoadingAssets.insert(path);
 
-		// ÕÒµ½×Ê²ú·ÃÎÊÆ÷ Find reader
+		// æ‰¾åˆ°èµ„äº§è®¿é—®å™¨ Find reader
 		auto loader = m_AssetLoaders.find(&typeInfo);
 		if (loader == m_AssetLoaders.end())
 		{
 			return nullptr;
 		}
 
-		// ¶ÁÈ¡×Ê²ú
+		// è¯»å–èµ„äº§
 		loader->second->Read(path, asset);
 
-		// »º´æ×Ê²ú
+		// ç¼“å­˜èµ„äº§
 		if (asset != nullptr)
 			m_AssetMap[path] = asset;
 
-		// ´Ó¼ÓÔØÁĞ±íÉ¾³ı
+		// ä»åŠ è½½åˆ—è¡¨åˆ é™¤
 		m_LoadingAssets.erase(path);
 
 		return asset;
@@ -189,5 +224,20 @@ namespace VisionGal
 		m_AssetLoaders[&typeInfo] = std::unique_ptr<IAssetLoader>(loader);
 
 		return true;
+	}
+
+	std::time_t AssetManager::GetCFTime(std::filesystem::file_time_type t)
+	{
+		// ä¿å­˜åˆ°å˜é‡
+		fs::file_time_type saved_time = t;
+
+		// æˆ–è½¬æ¢ä¸º time_t æ–¹ä¾¿å­˜å‚¨ï¼ˆæ¯”å¦‚å†™åˆ°æ•°æ®åº“/æ–‡ä»¶ï¼‰
+		auto sctp = std::chrono::time_point_cast<std::chrono::system_clock::duration>(
+			t - fs::file_time_type::clock::now()
+			+ std::chrono::system_clock::now());
+
+		std::time_t cftime = std::chrono::system_clock::to_time_t(sctp);
+
+		return cftime;
 	}
 }

@@ -68,6 +68,20 @@ TEST(ProjectCreatorTest, CreateProject) {
 		ASSERT_FALSE(ProjectCreator::CreateProject(config));
 	}
 
+	// 中文正常配置，应该成功
+	{
+		ProjectCreateConfig config;
+		config.ProjectName = "测试项目";
+		config.ProjectPath = testPath.string();
+		ASSERT_TRUE(ProjectCreator::CreateProject(config));
+		std::filesystem::path projectPath = testPath / config.ProjectName;
+		ASSERT_TRUE(std::filesystem::exists(projectPath));
+		ASSERT_TRUE(std::filesystem::exists(projectPath / "Assets"));
+		ASSERT_TRUE(std::filesystem::exists(projectPath / "ProjectSettings"));
+		ASSERT_TRUE(std::filesystem::exists(projectPath / "Editor"));
+		ASSERT_TRUE(std::filesystem::exists(projectPath / "Intermediate"));
+	}
+
 	// 清理测试环境
 	std::filesystem::remove_all(testPath);
 }
