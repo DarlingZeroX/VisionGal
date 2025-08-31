@@ -247,6 +247,31 @@ namespace VisionGal::GalGame
 		return TransitionManager::GetInstance()->StartTransitionWithCommand(tLayer, cmd);
 	}
 
+	bool GalGameEngine::TransitionCommandWithCustomImage(const String& layer, const String& imagePath,
+		const String& cmd)
+	{
+		if (m_DialogueSystem->IsFastForward())
+			return true;
+
+		auto tLayer = layer;
+		if (tLayer == "背景")
+		{
+			tLayer = "Background";
+		}
+		else if (tLayer == "场景")
+		{
+			tLayer = "Scene";
+		}
+		else if (tLayer == "屏幕")
+		{
+			tLayer = "Screen";
+		}
+
+		String path = Core::GetAssetsPathVFS() + imagePath;
+
+		return TransitionManager::GetInstance()->StartCustomImageTransitionWithCommand(tLayer, path, cmd);
+	}
+
 	bool GalGameEngine::PreLoadResource(const String& path)
 	{
 		if (path.ends_with(".png") || path.ends_with(".jpg") || path.ends_with(".bmp") || path.ends_with(".tga"))

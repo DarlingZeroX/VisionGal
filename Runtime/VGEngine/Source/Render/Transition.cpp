@@ -183,16 +183,15 @@ namespace VisionGal
 	/////////////////////////////////////////	CustomImageSceneTransition
 	/////////////////////////////////////////////////////////////////////////////////////
 
-	Ref<OpenGL::ShaderProgram> CustomImageSceneTransition::s_ShaderProgram = nullptr;
-
-	CustomImageSceneTransition::CustomImageSceneTransition()
+	CustomImageSceneTransition::CustomImageSceneTransition(const Ref<Texture2D>& texture)
 	{
-
+		m_ShaderProgram = ShaderManager::Get()->GetBuiltinProgram("TransitionCustomImage");
+		m_TransitionTexture = texture;
 	}
 
 	void CustomImageSceneTransition::CompileShader()
 	{
-		if (s_ShaderProgram != nullptr)
+		if (m_ShaderProgram != nullptr)
 			return;
 
 		// 顶点着色器
@@ -242,7 +241,7 @@ namespace VisionGal
 		shaders.push_back(vs.get());
 		shaders.push_back(ps.get());
 
-		s_ShaderProgram = OpenGL::ShaderProgram::Create(shaders);
+		//m_ShaderProgram = OpenGL::ShaderProgram::Create(shaders);
 	}
 
 	void CustomImageSceneTransition::OnRenderTransition()
@@ -259,6 +258,12 @@ namespace VisionGal
 		//s_ShaderProgram->SetInt("transition", 2);
 		//
 		//s_ShaderProgram->SetFloat("progress", GetProgress());
+
+		VGFX::UseProgram(m_ShaderProgram);
+		VGFX::SetTexture(0, "prevScene", GetPrevFrame());
+		VGFX::SetTexture(1, "nextScene", GetNextFrame());
+		VGFX::SetTexture(2, "transition", m_TransitionTexture->GetTexture().get());
+		VGFX::SetUniformFloat("progress", GetProgress());
 	}
 
 	void CustomImageSceneTransition::SetTransitionImage(const Ref<Texture2D>& texture)

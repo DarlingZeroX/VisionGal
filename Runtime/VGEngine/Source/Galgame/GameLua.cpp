@@ -227,6 +227,7 @@ namespace VisionGal::GalGame
 			//中文
 			"等待", sol::yielding(&GalGameEngine::Wait),
 			"转场命令", &GalGameEngine::TransitionCommand,
+			"自定义图片转场命令", &GalGameEngine::TransitionCommandWithCustomImage,
 			"加载剧情脚本", &GalGameEngine::LoadStoryScriptOnUpdate,
 			"加载存档", &GalGameEngine::LoadArchive,
 			"对话系统", sol::property(

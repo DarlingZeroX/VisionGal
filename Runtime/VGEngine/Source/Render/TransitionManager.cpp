@@ -1,4 +1,6 @@
 #include "Render/TransitionManager.h"
+
+#include "Interface/Loader.h"
 #include "Render/Transition.h"
 
 namespace VisionGal {
@@ -89,6 +91,47 @@ namespace VisionGal {
 			return true;
 		}
 
+		return false;
+	}
+
+	Ref<ISceneTransition> TransitionManager::CreateCustomImageTransitionWithCommand(const String& imagePath,
+		const String& cmd)
+	{
+		std::istringstream iss(cmd);
+
+		float duration = 1.0f;     // 如 1.0
+		std::string transition;    // 可选，如 "easein"
+
+		iss >> duration;
+		iss >> transition;
+
+		H_LOG_INFO("Custom Image Transition: %s, Duration: %f, Transition: %s", imagePath.c_str(), duration,
+			transition.c_str());
+
+		// 读取自定义转场图片资产
+		auto tex = LoadObject<Texture2D>(imagePath);
+		if (tex == nullptr)
+		{
+			H_LOG_WARN("加载自定义转场图片失败: %s", imagePath.c_str());
+			return nullptr;
+		}
+
+		auto iTransition = CreateRef<CustomImageSceneTransition>(tex);
+		iTransition->SetDuration(duration);
+		return iTransition;
+	}
+
+	bool TransitionManager::StartCustomImageTransitionWithCommand(const String& layer, const String& imagePath,
+		const String& cmd)
+	{
+		auto transition = CreateCustomImageTransitionWithCommand(imagePath, cmd);
+		if (transition != nullptr)
+		{
+			transition->SetLayer(layer);
+			transition->Start();
+			StartTransition(transition);
+			return true;
+		}
 		return false;
 	}
 

@@ -44,6 +44,8 @@ namespace VisionGal
 	{
 		AddBuiltInShader("TransitionFade", "transition/TransitionFade.glsl");
 		AddBuiltInShader("TransitionPush", "transition/TransitionPush.glsl");
+		AddBuiltInShader("TransitionCustomImage", "transition/TransitionCustomImage.glsl");
+
 		AddBuiltInShader("SpriteDefault");
 		AddBuiltInShader("FullScreenQuad");
 		AddBuiltInShader("ViewportOutput");

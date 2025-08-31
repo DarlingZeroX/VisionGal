@@ -26,6 +26,7 @@ namespace VisionGal::GalGame
 
 		bool SceneTransition(const Ref<ISceneTransition>& transition) override;		/// 用自定义转场对象执行转场操作。
 		bool TransitionCommand(const String& layer, const String& cmd) override;	/// 执行指定图层上的转场命令。
+		bool TransitionCommandWithCustomImage(const String& layer, const String& imagePath, const String& cmd);
 
 		GalSprite* ShowSprite(const std::string& layer, const std::string& path) override;	/// 在指定图层上显示精灵，并返回精灵对象指针。
 		GalAudio* PlayAudio(const std::string& layer, const std::string& path) override;	/// 播放指定图层上的音频文件。并返回音频对象指针。

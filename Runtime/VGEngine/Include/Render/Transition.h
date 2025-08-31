@@ -117,7 +117,7 @@ namespace VisionGal
 	class CustomImageSceneTransition: public SceneTransitionBase
 	{
 	public:
-		CustomImageSceneTransition();
+		CustomImageSceneTransition(const Ref<Texture2D>& texture);
 		CustomImageSceneTransition(const CustomImageSceneTransition&) = delete;
 		CustomImageSceneTransition& operator=(const CustomImageSceneTransition&) = delete;
 		CustomImageSceneTransition(CustomImageSceneTransition&&) noexcept = default;
@@ -129,8 +129,7 @@ namespace VisionGal
 		void OnRenderTransition() override;
 		void CompileShader();
 	private:
-		static Ref<OpenGL::ShaderProgram> s_ShaderProgram;
-
+		VGFX::IShaderProgram* m_ShaderProgram;
 		Ref<Texture2D> m_TransitionTexture;
 	};
 }

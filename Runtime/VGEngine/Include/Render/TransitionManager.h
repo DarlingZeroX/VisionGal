@@ -23,8 +23,13 @@ namespace VisionGal {
 	public:
 		static TransitionManager* GetInstance();
 
+		/// 通过转场命令创建转场对象
 		static Ref<ISceneTransition> CreateTransitionWithCommand(const String& cmd);
+		static Ref<ISceneTransition> CreateCustomImageTransitionWithCommand(const String& imagePath, const String& cmd);
+
 		bool StartTransitionWithCommand(const String& layer, const String& cmd);
+		bool StartCustomImageTransitionWithCommand(const String& layer, const String& imagePath, const String& cmd);
+
 		void StartTransition(const Ref<ISceneTransition>& transition);
 		void Update();
 		ISceneTransition* GetLayerTransition(const String& layer);
