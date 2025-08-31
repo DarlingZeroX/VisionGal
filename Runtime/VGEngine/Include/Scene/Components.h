@@ -111,6 +111,7 @@ namespace VisionGal {
 			archive(flip);
 		}
 
+		uint pipelineIndex;
 		Ref<Sprite> sprite;
 		float4 color;
 		int2 flip;
@@ -319,6 +320,7 @@ namespace VisionGal {
 			 archive(loop);
 		 }
 
+		 uint pipelineIndex;
 		 Ref<VideoClip> videoClip;
 		 bool playOnAwake = true;
 		 bool waitForFirstFrame = true;

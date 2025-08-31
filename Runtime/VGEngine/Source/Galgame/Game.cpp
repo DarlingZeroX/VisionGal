@@ -235,13 +235,14 @@ namespace VisionGal::GalGame
 			return;
 		}
 
-		TransitionManager::GetInstance()->StartTransitionWithCommand("Background", cmd);
-		//if (auto transition = TransitionManager::CreateTransitionWithCommand(cmd))
-		//{
-		//	transition->SetLayer("Background");
-		//	transition->Start();
-		//	GameEngineCore::GetCurrentEngine()->SceneTransition(transition);
-		//}
+		if (m_Layer == "Background")
+		{
+			TransitionManager::GetInstance()->StartTransitionWithCommand("Background", cmd);
+		}
+		else if (m_Layer == "Foreground")
+		{
+			TransitionManager::GetInstance()->StartTransitionWithCommand("Foreground", cmd);
+		}
 	}
 
 	GalAudio::GalAudio(const std::string& layer, const std::string& path)

@@ -114,6 +114,7 @@ namespace VisionGal
 		PushType m_PushType;
 	};
 
+	/// 自定义图片转场
 	class CustomImageSceneTransition: public SceneTransitionBase
 	{
 	public:
@@ -125,9 +126,7 @@ namespace VisionGal
 		~CustomImageSceneTransition() override = default;
 
 		void SetTransitionImage(const Ref<Texture2D>& texture);
-	private:
 		void OnRenderTransition() override;
-		void CompileShader();
 	private:
 		VGFX::IShaderProgram* m_ShaderProgram;
 		Ref<Texture2D> m_TransitionTexture;

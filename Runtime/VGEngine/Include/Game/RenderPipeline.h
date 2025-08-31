@@ -23,6 +23,8 @@ namespace VisionGal
         void OnUpdate() override;
         void OnRender() override;
 
+		void RenderScene(IScene* scene,ICamera* camera ,uint pipelineIndex);
+
         void CreateRenderTargets(float2 size);
 
         VGFX::ITexture* GetRenderResult();

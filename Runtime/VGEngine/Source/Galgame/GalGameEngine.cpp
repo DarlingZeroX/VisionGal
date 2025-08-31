@@ -9,6 +9,7 @@
 #include "Galgame/StoryScriptLuaInterface.h"
 #include "Galgame/SpriteTransformScriptManager.h"
 #include "Render/TransitionManager.h"
+#include "Engine/EngineResource.h"
 
 namespace VisionGal::GalGame
 {
@@ -235,9 +236,9 @@ namespace VisionGal::GalGame
 		{
 			tLayer = "Background";
 		}
-		else if (tLayer == "场景")
+		else if (tLayer == "前景")
 		{
-			tLayer = "Scene";
+			tLayer = "Foreground";
 		}
 		else if (tLayer == "屏幕")
 		{
@@ -258,9 +259,9 @@ namespace VisionGal::GalGame
 		{
 			tLayer = "Background";
 		}
-		else if (tLayer == "场景")
+		else if (tLayer == "前景")
 		{
-			tLayer = "Scene";
+			tLayer = "Foreground";
 		}
 		else if (tLayer == "屏幕")
 		{
@@ -288,12 +289,10 @@ namespace VisionGal::GalGame
 		return true;
 	}
 
-	GalSprite* GalGameEngine::ShowSprite(const std::string& layer, const std::string& path)
+	GameActor* GalGameEngine::CreateSpriteInline(const std::string& path)
 	{
-		String resPath = Core::GetAssetsPathVFS() + path;
-
 		// 读取纹理资产
-		auto tex = LoadObject<Texture2D>(resPath);
+		auto tex = LoadObject<Texture2D>(path);
 		if (tex == nullptr)
 		{
 			H_LOG_WARN("加载图片失败: %s", path.c_str());
@@ -303,21 +302,62 @@ namespace VisionGal::GalGame
 		// 创建精灵角色
 		auto* actor = m_Scene->CreateActor();
 		actor->SetLabel(path);
-		actor->SetVisible(false);
+		//actor->SetVisible(false);
 
 		// 添加必要组件
 		actor->AddComponent<TransformScriptComponent>();
 		actor->AddComponent<SpriteRendererComponent>()->sprite = Sprite::Create(tex, tex->Size());
 
+		return actor;
+	}
+
+	GalSprite* GalGameEngine::AddSprite(GameActor* actor, const std::string& layer, const std::string& path)
+	{
+		if (actor == nullptr)
+			return nullptr;
+
 		// 创建GalGame的图片类
 		GalSprite* sprite = new GalSprite(layer, path);
 		sprite->m_Actor = actor;
+
+		auto* spriteCom = actor->GetComponent<SpriteRendererComponent>();
+		if (spriteCom)
+		{
+			spriteCom->pipelineIndex = static_cast<uint>(RenderPipelineIndex::GalGamePipeline);
+
+			// 设置屏幕专属渲染管线
+			if (layer == "Screen")
+			{
+				spriteCom->pipelineIndex = static_cast<uint>(RenderPipelineIndex::ScreenPipeline);
+			}
+		}
 
 		// 对齐底部
 		sprite->AlignBottom();
 
 		// 添加到管理器
 		m_LayeredSceneManager->AddSprite(sprite);
+
+		return sprite;
+	}
+
+	GalSprite* GalGameEngine::ShowSprite(const std::string& layer, const std::string& path)
+	{
+		String resPath = Core::GetAssetsPathVFS() + path;
+		GameActor* actor = CreateSpriteInline(resPath);
+		return AddSprite(actor, layer, resPath);
+	}
+
+	GalSprite* GalGameEngine::ShowColor(const std::string& layer, const float4& color)
+	{
+		String resPath = EngineResource::GetDefaultSpriteTexturePath();
+		GameActor* actor = CreateSpriteInline(resPath);
+
+		GalSprite* sprite = AddSprite(actor, layer, resPath);
+
+		// 设置全屏颜色
+		actor->GetComponent<TransformComponent>()->scale = float3(999999, 999999, 1);
+		actor->GetComponent<SpriteRendererComponent>()->color = color;
 
 		return sprite;
 	}

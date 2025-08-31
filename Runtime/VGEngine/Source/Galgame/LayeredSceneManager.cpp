@@ -27,7 +27,14 @@ namespace VisionGal::GalGame
 		if (sprite == nullptr)
 			return;
 
-		auto& sprites = m_Sprite[m_SpriteLayer[sprite->GetResourceLayer()]];
+		// 如果图层不存在则创建
+		std::string layer = sprite->GetResourceLayer();
+		if (m_SpriteLayer.find(layer) == m_SpriteLayer.end())
+		{
+			AddSpriteLayer(layer);
+		}
+
+		auto& sprites = m_Sprite[m_SpriteLayer[layer]];
 
 		for (auto& sp : sprites)
 		{
@@ -46,10 +53,18 @@ namespace VisionGal::GalGame
 		if (audio == nullptr)
 			return;
 
+		// 如果图层不存在则创建
+		std::string layer = audio->GetResourceLayer();
+		if (m_AudioLayer.find(layer) == m_AudioLayer.end())
+		{
+			AddAudioLayer(layer);
+		}
+
+		// 如果是语音图层，则停止当前所有语音播放
 		if (audio->GetResourceLayer() == "Voice")
 		{
-			auto& layer = m_Audio[m_AudioLayer[audio->GetResourceLayer()]];
-			for (auto& audio: layer)
+			auto& audios = m_Audio[m_AudioLayer[audio->GetResourceLayer()]];
+			for (auto& audio: audios)
 			{
 				auto* galAudio = dynamic_cast<GalAudio*>(audio);
 				if (galAudio != nullptr)
@@ -226,26 +241,29 @@ namespace VisionGal::GalGame
 		TraverseAudio(callback);
 	}
 
+	void LayeredSceneManager::AddSpriteLayer(const String& layer)
+	{
+		m_SpriteLayer[layer] = m_Sprite.size();
+		m_Sprite.emplace_back();
+	}
+
+	void LayeredSceneManager::AddAudioLayer(const String& layer)
+	{
+		m_AudioLayer[layer] = m_Audio.size();
+		m_Audio.emplace_back();
+	}
+
 	void LayeredSceneManager::Initialize()
 	{
-		m_SpriteLayer["Background"] = 0;
-		m_SpriteLayer["Scene"] = 1;
-		m_SpriteLayer["SceneCharacterSpriteCurrent"] = 2;
-		m_SpriteLayer["SceneCharacterSpritePrev"] = 3;
+		AddSpriteLayer("Background");
+		AddSpriteLayer("Foreground");
+		AddSpriteLayer("SceneCharacterSpriteCurrent");
+		AddSpriteLayer("SceneCharacterSpritePrev");
+		AddSpriteLayer("Screen");
 
-		for (auto& layer : m_SpriteLayer)
-		{
-			m_Sprite.emplace_back();
-		}
-
-		m_AudioLayer["BGM"] = 0;
-		m_AudioLayer["Voice"] = 1;
-		m_AudioLayer["Effect"] = 2;
-		m_AudioLayer["System"] = 3;
-
-		for (auto& layer : m_AudioLayer)
-		{
-			m_Audio.emplace_back();
-		}
+		AddAudioLayer("BGM");
+		AddAudioLayer("Voice");
+		AddAudioLayer("Effect");
+		AddAudioLayer("System");
 	}
 }

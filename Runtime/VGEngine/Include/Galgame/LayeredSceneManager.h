@@ -2,7 +2,7 @@
 #include "Interface.h"
 #include "../EngineConfig.h"
 #include "../Scene/Scene.h"
-#include "../Render/Core.h"
+#include "../Render/RenderCore.h"
 #include <deque>
 #include "Game.h"
 
@@ -41,6 +41,9 @@ namespace VisionGal::GalGame
 		void TraverseAudioLayer(const String& layer, const std::function<void(IGalGameAudio* audio)>& callback) override;
 		void TraverseAudio(const std::function<void(IGalGameAudio* audio)>& callback) override;
 		void TraverseScene(std::function<void(IGalGameResource* actor)> callback) override;
+
+		void AddSpriteLayer(const String& layer);
+		void AddAudioLayer(const String& layer);
 	public:
 		//void Initialize(Scene* scene);
 		//void OnRender();

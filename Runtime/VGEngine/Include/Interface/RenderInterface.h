@@ -6,6 +6,13 @@
 
 namespace VisionGal
 {
+	enum class RenderPipelineIndex: uint
+	{
+		CoreRenderPipeline = 0,
+		ScreenPipeline = 1,
+		GalGamePipeline = 2,
+	};
+
 	struct ISprite
 	{
 		virtual ~ISprite() = default;

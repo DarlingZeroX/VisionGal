@@ -5,3 +5,8 @@
 #include "Camera.h"
 #include "Effect.h"
 #include "Transition.h"
+
+namespace VisionGal
+{
+
+}

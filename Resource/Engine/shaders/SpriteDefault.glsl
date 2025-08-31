@@ -11,6 +11,7 @@ VS{
     void main() {
         TexCoord = aTexCoord;
         gl_Position = projection * model * vec4(aPos, 1.0);
+        //gl_Position = vec4(aPos, 1.0) * model * projection;
     }
 }
 PS{

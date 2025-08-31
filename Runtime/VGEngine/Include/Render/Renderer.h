@@ -13,9 +13,9 @@ namespace VisionGal
 		SpriteRendererHandler();
 		~SpriteRendererHandler() = default;
 
-		void Render(std::vector<GameActor*>& sprites, ICamera* camera);
+		//void Render(std::vector<GameActor*>& sprites, ICamera* camera);
 
-		void Render(GameActor* sprite, ICamera* camera);
+		void Render(GameActor* sprite, ICamera* camera, uint pipelineIndex);
 	};
 
 	struct FullScreenRendererHandler

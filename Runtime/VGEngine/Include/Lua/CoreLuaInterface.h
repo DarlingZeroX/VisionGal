@@ -5,6 +5,11 @@ namespace VisionGal
 {
 	namespace Lua
 	{
+		struct CoreTypesLuaInterface
+		{
+			static void Initialize(sol::state& L);
+		};
+
 		struct ApplicationLuaInterface
 		{
 			static void ApplicationQuit();

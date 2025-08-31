@@ -1,6 +1,7 @@
 #include "Galgame/StoryScriptLuaInterface.h"
 #include "Galgame/GameLua.h"
 #include <string>
+#include "Lua/CoreLuaInterface.h"
 
 namespace VisionGal::GalGame
 {
@@ -51,6 +52,7 @@ namespace VisionGal::GalGame
 
 	void StoryScriptLuaInterface::Initialise(sol::state& lua)
 	{
+		Lua::CoreTypesLuaInterface::Initialize(lua);
 		GalGameLuaInterface::Initialise(lua);
 
 		lua.new_usertype<Transform>("GalTransform",

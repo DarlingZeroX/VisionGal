@@ -24,19 +24,13 @@ namespace VisionGal
 	{
 		if (is_dirty)
 		{
-			// ¹¹½¨Ëõ·Å¾ØÕó
-			model = glm::scale(glm::identity<matrix4x4>(), scale);  // Ëõ·Å
+			// åˆ†åˆ«æ„å»ºå˜æ¢çŸ©é˜µï¼Œç„¶åæŒ‰æ­£ç¡®é¡ºåºç›¸ä¹˜
+			glm::mat4 S = glm::scale(glm::identity<glm::mat4>(), scale);     // ç¼©æ”¾çŸ©é˜µ
+			glm::mat4 R = glm::mat4_cast(rotation);                          // æ—‹è½¬çŸ©é˜µ  
+			glm::mat4 T = glm::translate(glm::identity<glm::mat4>(), location); // å¹³ç§»çŸ©é˜µ
 
-			// ´ÓËÄÔªÊı¹¹½¨Ğı×ª¾ØÕó
-			model = model * glm::mat4_cast( rotation);
-
-			// Ğı×ª£¨×¢ÒâË³Ğò£ºZYX£©
-			//model = glm::rotate(model, rotation.z, glm::vec3(0.0f, 0.0f, 1.0f));  // ÈÆZÖá
-			//model = glm::rotate(model, rotation.y, glm::vec3(0.0f, 1.0f, 0.0f));  // ÈÆYÖá
-			//model = glm::rotate(model, rotation.x, glm::vec3(1.0f, 0.0f, 0.0f));  // ÈÆXÖá
-
-			// ¹¹½¨Æ½ÒÆ¾ØÕó
-			model = glm::translate(model, location);  // Î»ÒÆ
+			// æ­£ç¡®çš„ç»„åˆï¼šå…ˆç¼©æ”¾ï¼Œå†æ—‹è½¬ï¼Œæœ€åå¹³ç§»
+			model = T * R * S;
 		}
 
 		is_dirty = false;
@@ -48,6 +42,7 @@ namespace VisionGal
 		flip = int2(0, 0);
 		material = CreateRef<Material>();
 		sprite = nullptr;
+		pipelineIndex = static_cast<uint>( RenderPipelineIndex::CoreRenderPipeline );
 	}
 
 	std::string SpriteRendererComponent::GetComponentType() const
@@ -89,6 +84,7 @@ namespace VisionGal
 	VideoPlayerComponent::VideoPlayerComponent()
 	{
 		videoPlayer = CreateRef<VideoPlayer>();
+		pipelineIndex = static_cast<uint>(RenderPipelineIndex::CoreRenderPipeline);
 	}
 
 	std::string VideoPlayerComponent::GetComponentType() const

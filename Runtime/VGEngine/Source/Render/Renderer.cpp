@@ -14,21 +14,28 @@ namespace VisionGal
 
 	}
 
-	void SpriteRendererHandler::Render(std::vector<GameActor*>& sprites, ICamera* camera)
-	{
-		for (auto& obj : sprites)
-		{
-			Render(obj, camera);
-		}
-	}
-	void SpriteRendererHandler::Render(GameActor* actor, ICamera* camera)
+	//void SpriteRendererHandler::Render(std::vector<GameActor*>& sprites, ICamera* camera)
+	//{
+	//	for (auto& obj : sprites)
+	//	{
+	//		Render(obj, camera);
+	//	}
+	//}
+
+	void SpriteRendererHandler::Render(GameActor* actor, ICamera* camera, uint pipelineIndex)
 	{
 		TransformComponent* transform = actor->GetComponent<TransformComponent>();
 		SpriteRendererComponent* spriteRenderer = actor->GetComponent<SpriteRendererComponent>();
 
-		// 如果颜色透明则不渲染
+		if (transform->visible == false)
+			return;
+
+		// 濡傛灉棰滆壊閫忔槑鍒欎笉娓叉煋
 		if (spriteRenderer->color.a == 0.f)
-			return; 
+			return;
+
+		if (spriteRenderer->pipelineIndex != pipelineIndex)
+			return;
 
 		auto* tex = spriteRenderer->sprite->GetITexture();
 		auto* program = spriteRenderer->material->GetShaderProgram();

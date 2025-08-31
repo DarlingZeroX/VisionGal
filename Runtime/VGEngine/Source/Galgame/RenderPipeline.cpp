@@ -37,7 +37,7 @@ namespace VisionGal::GalGame
 	void RenderPipeline::RenderSprite(GameActor* actor, IOrthoCamera* camera)
 	{
 		SpriteRendererHandler handler;
-		handler.Render(actor, camera);
+		handler.Render(actor, camera, static_cast<uint>(RenderPipelineIndex::GalGamePipeline));
 
 		//TransformComponent* transform = actor->GetComponent<TransformComponent>();
 		//SpriteRendererComponent* spriteRenderer = actor->GetComponent<SpriteRendererComponent>();
@@ -82,7 +82,7 @@ namespace VisionGal::GalGame
 				{
 					this->CaptureBackgroundLayer();
 				}
-				else if (event.Layer == "Scene")
+				else if (event.Layer == "Foreground")
 				{
 					this->CaptureSceneLayer();
 				}
@@ -118,14 +118,6 @@ namespace VisionGal::GalGame
 	void RenderPipeline::RenderSceneLayer(ISpriteLayerTraverse* traverser, IOrthoCamera* camera,
 		OpenGL::RenderTarget2D* rt)
 	{
-		// 渲染场景层
-		m_SceneRT->GetFrameBuffer()->Bind();
-		traverser->TraverseSpriteLayer("Scene", [this, camera](IGalGameSprite* sprite)
-			{
-				RenderSprite(sprite->GetResourceActor(), camera);
-			});
-		m_SceneRT->GetFrameBuffer()->Unbind();
-
 		// 渲染人物立绘层
 		{
 			// RGB通道使用预乘Alpha混合，Alpha通道使用加法混合，在最后混合人物立绘层时，RGB通道因为预乘过直接相加，Alpha通道也使用加法混合
@@ -161,16 +153,36 @@ namespace VisionGal::GalGame
 			RenderMixCharacterSprite();
 		}
 
+		// 渲染前景层
+		m_SceneRT->GetFrameBuffer()->Bind();
+		traverser->TraverseSpriteLayer("Foreground", [this, camera](IGalGameSprite* sprite)
+			{
+				RenderSprite(sprite->GetResourceActor(), camera);
+			});
+		m_SceneRT->GetFrameBuffer()->Unbind();
+
 		// 渲染到屏幕帧缓冲
 		rt->GetFrameBuffer()->Bind();
 		m_FullScreenRenderer->image->SetTexture(m_SceneRT->GetTextureRef());
 		RenderFullScreen(m_FullScreenRenderer.get());
 		rt->GetFrameBuffer()->Unbind();
+
+		//if (ImGui::Begin("TestForeground"))
+		//{
+		//	ImGui::Text("PrevForeground");
+		//	ImGui::Image((void*)(intptr_t)m_PrevSceneTexture->GetShaderResourceView(), ImVec2(256, 144),
+		//		ImVec2(0, 1), ImVec2(1, 0));
+		//
+		//	ImGui::Text("NextForeground");
+		//	ImGui::Image((void*)(intptr_t)m_SceneRT->GetTexture()->GetRendererID(), ImVec2(256, 144),
+		//		ImVec2(0, 1), ImVec2(1, 0));
+		//}
+		//ImGui::End();
 		
 		// 场景层场景转换
 		rt->GetFrameBuffer()->Bind();
 		TransitionManager::GetInstance()->LayerTransition(
-			"Scene",
+			"Foreground",
 			m_PrevSceneTexture,
 			m_SceneRT->GetTextureRef()
 		);

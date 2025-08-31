@@ -5,6 +5,7 @@
 #include "HCore/Include/Core/HLocalization.h"
 #include "Interface/Loader.h"
 #include "Galgame/Components.h"
+#include "Engine/EngineResource.h"
 
 namespace VisionGal
 {
@@ -48,10 +49,11 @@ namespace VisionGal
 			auto com = actor->AddComponent<SpriteRendererComponent>();
 
 			{
-				String path = "texture/white.png";
-				String resPath = Core::GetEngineResourcePathVFS() + path;
+				//String path = "texture/white.png";
+				//String resPath = Core::GetEngineResourcePathVFS() + path;
+				String path = EngineResource::GetDefaultSpriteTexturePath();
 
-				auto tex = LoadObject<Texture2D>(resPath);
+				auto tex = LoadObject<Texture2D>(path);
 
 				com->sprite = Sprite::Create(tex, tex->Size());
 			}

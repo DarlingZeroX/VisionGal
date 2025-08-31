@@ -3,7 +3,7 @@
 #include "../Interface/AppInterface.h"
 #include "../EngineConfig.h"
 #include "../Scene/Scene.h"
-#include "../Render/Core.h"
+#include "../Render/RenderCore.h"
 #include "../Graphics/OpenGL/RenderTarget.h"
 
 namespace VisionGal::GalGame

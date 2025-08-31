@@ -37,8 +37,6 @@ namespace VisionGal
 
 		VGFX::SetViewRect(0, 0,m_Viewport->Width() , m_Viewport->Height());
 
-		auto view = m_Scene->GetWorld()->view<TransformComponent, SpriteRendererComponent>();
-
 		if (m_Viewport->GetCameras().empty())
 			return;
 
@@ -47,23 +45,24 @@ namespace VisionGal
 		for (auto cam : cameras)
 			camera = cam;
 
-		// ÏÈÇå³ýÖ¡»º³å
+		// å…ˆæ¸…é™¤å¸§ç¼“å†²
 		{
 			m_RenderBufferFinal->GetFrameBuffer()->Bind();
 			glClearColor(0, 0, 0, 1);
-			// Çå³ýÑÕÉ«»º³åÇø£¨ºÍÉî¶È»º³åÇø£¬ÈôÆôÓÃÁËÉî¶È²âÊÔ£©
+			// æ¸…é™¤é¢œè‰²ç¼“å†²åŒºï¼ˆå’Œæ·±åº¦ç¼“å†²åŒºï¼Œè‹¥å¯ç”¨äº†æ·±åº¦æµ‹è¯•ï¼‰
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 			m_RenderBufferFinal->GetFrameBuffer()->Unbind();
 		}
 
-		// Ö´ÐÐ³¡¾°äÖÈ¾Ç°»Øµ÷
+		// æ‰§è¡Œåœºæ™¯æ¸²æŸ“å‰å›žè°ƒ
 		if (m_GameEngineContext)
 		{
 			m_GameEngineContext->ExecuteBeforeRenderCallbacks(m_RenderBufferFinal.get());
 		}
 
-		// äÖÈ¾³¡¾°
+		// æ¸²æŸ“åœºæ™¯
 		{
+			// çŠ¶æ€è®¾ç½®
 			VGFX::EnableDepthTest(true);
 			// Set blending function for premultiplied alpha.
 			glEnable(GL_BLEND);
@@ -71,60 +70,78 @@ namespace VisionGal
 			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 			m_RenderBufferFinal->GetFrameBuffer()->Bind();
-
-			// äÖÈ¾¾«Áé
-			view.each([this, &camera](TransformComponent& transform, SpriteRendererComponent& spriteRenderer) { // flecs::entity argument is optional
-				if (transform.visible == false)
-					return;
-
-				auto* tex = spriteRenderer.sprite->GetITexture();
-				auto* program = spriteRenderer.material->GetShaderProgram();
-
-				VGFX::UseProgram(program);
-				VGFX::SetTexture(0, "texture1", tex);
-				VGFX::SetUniformFloat4("color", spriteRenderer.color);
-				VGFX::SetUniformInt2("flip", spriteRenderer.flip);
-				VGFX::SetUniformMatrix4("model", transform.model);
-				VGFX::SetUniformMatrix4("projection", camera->GetMatrix());
-				VGFX::RenderMesh(spriteRenderer.sprite->GetMesh());
-
-				});
-
-			// äÖÈ¾ÊÓÆµ
-			auto view1 = m_Scene->GetWorld()->view<TransformComponent, VideoPlayerComponent>();
-			view1.each([this, &camera](TransformComponent& transform, VideoPlayerComponent& videoPlayer) { // flecs::entity argument is optional
-				if (transform.visible == false)
-					return;
-				if (videoPlayer.videoPlayer == nullptr)
-					return;
-				if (videoPlayer.videoPlayer->GetSprite() == nullptr)
-					return;
-
-				videoPlayer.Update();
-
-				auto* tex = videoPlayer.videoPlayer->GetSprite()->GetITexture();
-				auto* program = ShaderManager::Get()->GetBuiltinProgram("SpriteDefault");
-
-				VGFX::UseProgram(program);
-				VGFX::SetTexture(0, "texture1", tex);
-				VGFX::SetUniformFloat4("color", float4(1.0, 1.0, 1.0, 1.0));
-				VGFX::SetUniformInt2("flip", int2(0, 0));
-				VGFX::SetUniformMatrix4("model", transform.model);
-				VGFX::SetUniformMatrix4("projection", camera->GetMatrix());
-				VGFX::RenderMesh(videoPlayer.videoPlayer->GetSprite()->GetMesh());
-
-				});
-
+			RenderScene(m_Scene, camera, static_cast<uint>(RenderPipelineIndex::CoreRenderPipeline));
 			m_RenderBufferFinal->GetFrameBuffer()->Unbind();
+
+			// è¿˜åŽŸçŠ¶æ€
 			VGFX::EnableDepthTest(false);
 			glDisable(GL_BLEND);
 		}
 
-		// Ö´ÐÐäÖÈ¾ºó»Øµ÷
+		// æ‰§è¡Œæ¸²æŸ“åŽå›žè°ƒ
 		if (m_GameEngineContext)
 		{
 			m_GameEngineContext->ExecuteAfterRenderCallbacks(m_RenderBufferFinal.get());
 		}
+	}
+
+	void CoreRenderPipeline::RenderScene(IScene* scene, ICamera* camera, uint pipelineIndex)
+	{
+		auto view = scene->GetWorld()->view<TransformComponent, SpriteRendererComponent>();
+
+		// æ¸²æŸ“ç²¾çµ
+		view.each([this, camera, pipelineIndex](TransformComponent& transform, SpriteRendererComponent& spriteRenderer) { // flecs::entity argument is optional
+			// ä¸å¯è§åˆ™ä¸æ¸²æŸ“
+			if (transform.visible == false)
+				return;
+			// ä¸å±žäºŽå½“å‰æ¸²æŸ“ç®¡çº¿åˆ™ä¸æ¸²æŸ“
+			if (spriteRenderer.pipelineIndex != pipelineIndex)
+				return;
+
+			auto* tex = spriteRenderer.sprite->GetITexture();
+			auto* program = spriteRenderer.material->GetShaderProgram();
+
+			VGFX::UseProgram(program);
+			VGFX::SetTexture(0, "texture1", tex);
+			VGFX::SetUniformFloat4("color", spriteRenderer.color);
+			VGFX::SetUniformInt2("flip", spriteRenderer.flip);
+			VGFX::SetUniformMatrix4("model", transform.model);
+			VGFX::SetUniformMatrix4("projection", camera->GetMatrix());
+			VGFX::RenderMesh(spriteRenderer.sprite->GetMesh());
+
+			});
+
+		// æ¸²æŸ“è§†é¢‘
+		auto view1 = m_Scene->GetWorld()->view<TransformComponent, VideoPlayerComponent>();
+		view1.each([this, camera, pipelineIndex](TransformComponent& transform, VideoPlayerComponent& videoPlayer) { // flecs::entity argument is optional
+			// ä¸å¯è§åˆ™ä¸æ¸²æŸ“
+			if (transform.visible == false)
+				return;
+			// ä¸å±žäºŽå½“å‰æ¸²æŸ“ç®¡çº¿åˆ™ä¸æ¸²æŸ“
+			if (videoPlayer.pipelineIndex != pipelineIndex)
+				return;
+			// æ²¡æœ‰è§†é¢‘åˆ™ä¸æ¸²æŸ“
+			if (videoPlayer.videoPlayer == nullptr)
+				return;
+			// è§†é¢‘æ²¡æœ‰ç²¾çµåˆ™ä¸æ¸²æŸ“
+			if (videoPlayer.videoPlayer->GetSprite() == nullptr)
+				return;
+
+			// æ›´æ–°è§†é¢‘
+			videoPlayer.Update();
+
+			auto* tex = videoPlayer.videoPlayer->GetSprite()->GetITexture();
+			auto* program = ShaderManager::Get()->GetBuiltinProgram("SpriteDefault");
+
+			VGFX::UseProgram(program);
+			VGFX::SetTexture(0, "texture1", tex);
+			VGFX::SetUniformFloat4("color", float4(1.0, 1.0, 1.0, 1.0));
+			VGFX::SetUniformInt2("flip", int2(0, 0));
+			VGFX::SetUniformMatrix4("model", transform.model);
+			VGFX::SetUniformMatrix4("projection", camera->GetMatrix());
+			VGFX::RenderMesh(videoPlayer.videoPlayer->GetSprite()->GetMesh());
+
+			});
 	}
 
 	void CoreRenderPipeline::CreateRenderTargets(float2 size)

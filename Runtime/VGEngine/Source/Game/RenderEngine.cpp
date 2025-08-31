@@ -89,8 +89,28 @@ namespace VisionGal
 		VGFX::UseProgram(program);
 		VGFX::SetTexture(0, "renderTex", m_RenderPipeline->GetRenderResult());
 		VGFX::SetTexture2DNative(1, "uiTex", UISystem::Get()->GetUIRenderResult());
-
 		VGFX::RenderMesh(mesh);
+
+		// 渲染屏幕前场景
+		if (m_Viewport->GetCameras().empty() == false)
+		{
+			auto& cameras = m_Viewport->GetCameras();
+			ICamera* camera;
+			for (auto cam : cameras)
+				camera = cam;
+			auto* orthoCamera = dynamic_cast<IOrthoCamera*>(camera);
+			if (orthoCamera)
+			{
+				auto* scene = GetSceneManager()->GetCurrentRunningScene();
+				if (scene)
+				{
+					glEnable(GL_BLEND);
+					glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+					m_RenderPipeline->RenderScene(scene, orthoCamera, static_cast<uint>(RenderPipelineIndex::ScreenPipeline));
+					glDisable(GL_BLEND);
+				}
+			}
+		}
 
 		m_ScreenRT->GetFrameBuffer()->Unbind();
 

@@ -2,7 +2,7 @@
 #include "GalGameEngineInterface.h"
 #include "../EngineConfig.h"
 #include "../Scene/Scene.h"
-#include "../Render/Core.h"
+#include "../Render/RenderCore.h"
 #include "../Utils/TransitionHelper.h"
 #include "RenderPipeline.h"
 #include "LayeredSceneManager.h"
@@ -29,6 +29,7 @@ namespace VisionGal::GalGame
 		bool TransitionCommandWithCustomImage(const String& layer, const String& imagePath, const String& cmd);
 
 		GalSprite* ShowSprite(const std::string& layer, const std::string& path) override;	/// 在指定图层上显示精灵，并返回精灵对象指针。
+		GalSprite* ShowColor(const std::string& layer, const float4& color);
 		GalAudio* PlayAudio(const std::string& layer, const std::string& path) override;	/// 播放指定图层上的音频文件。并返回音频对象指针。
 
 		GalCharacter* CreateCharacter(const String& name) override;	/// 创建一个具有指定人物名称的 GalCharacter 实例
@@ -54,6 +55,9 @@ namespace VisionGal::GalGame
 		void Reset() override;	/// 重置引擎的状态，通常用于将引擎恢复到初始状态。
 		void Wait(float duration) override;	/// 等待指定的时间长度。
 	private:
+		GameActor* CreateSpriteInline(const std::string& path);
+		GalSprite* AddSprite(GameActor* sprite,const std::string& layer, const std::string& path);
+
 		void OnMainSceneChanged(const EngineEvent& evt);
 		void CreateSubsystem(IGameEngineContext* context, Rml::Context* uiContext);
 
