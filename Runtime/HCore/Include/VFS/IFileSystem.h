@@ -12,7 +12,7 @@ using IFileSystemWeakPtr = std::weak_ptr<class IFileSystem>;
 class IFileSystem
 {
 public:
-    typedef std::unordered_map<std::string, IFilePtr> TFileList;
+    typedef std::unordered_map<std::filesystem::path, IFilePtr> TFileList;
     
 public:
     IFileSystem() = default;
@@ -113,7 +113,7 @@ protected:
 
     IFilePtr FindFile(const FileInfo& fileInfo, const TFileList& fileList) const
     {
-        auto it = fileList.find(fileInfo.AbsolutePath());
+        auto it = fileList.find(fileInfo.Path());
         if (it == fileList.end()) {
             return nullptr;
         }

@@ -63,7 +63,7 @@ namespace VisionGal::GalGame
 
 		virtual TransformComponent* GetTransformComponent();
 
-		static void Cut(const std::string& cut);
+		void Cut(const std::string& cut);
 
 		std::string m_Path;
 		std::string m_Layer;

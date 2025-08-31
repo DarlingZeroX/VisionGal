@@ -104,7 +104,7 @@ namespace VisionGal
 
 	DissolveSceneTransition::DissolveSceneTransition()
 	{
-		m_ShaderProgram = ShaderManager::Get()->GetBuiltinProgram("SceneFade");
+		m_ShaderProgram = ShaderManager::Get()->GetBuiltinProgram("TransitionFade");
 	}
 
 	void DissolveSceneTransition::OnRenderTransition()
@@ -123,7 +123,7 @@ namespace VisionGal
 	FadeSceneTransition::FadeSceneTransition(FadeType type)
 	{
 		m_FadeType = type;
-		m_ShaderProgram = ShaderManager::Get()->GetBuiltinProgram("SceneFade");
+		m_ShaderProgram = ShaderManager::Get()->GetBuiltinProgram("TransitionFade");
 	}
 	void FadeSceneTransition::OnRenderTransition()
 	{
@@ -142,6 +142,40 @@ namespace VisionGal
 		VGFX::SetTexture(0, "prevScene", GetPrevFrame());
 		VGFX::SetTexture(1, "nextScene", GetNextFrame());
 
+		VGFX::SetUniformFloat("progress", GetProgress());
+	}
+
+	/////////////////////////////////////////////////////////////////////////////////////
+	/////////////////////////////////////////	PushSceneTransition
+	/////////////////////////////////////////////////////////////////////////////////////
+
+	PushSceneTransition::PushSceneTransition(PushType type)
+	{
+		m_PushType = type;
+		m_ShaderProgram = ShaderManager::Get()->GetBuiltinProgram("TransitionPush");
+	}
+
+	void PushSceneTransition::OnRenderTransition()
+	{
+		VGFX::UseProgram(m_ShaderProgram);
+		switch (m_PushType)
+		{
+		case PushType::PushLeft:
+			VGFX::SetUniformFloat2("direction", float2(-1, 0));
+			break;
+		case PushType::PushRight:
+			VGFX::SetUniformFloat2("direction", float2(1, 0));
+			break;
+		case PushType::PushUp:
+			VGFX::SetUniformFloat2("direction", float2(0, 1));
+			break;
+		case PushType::PushDown:
+			VGFX::SetUniformFloat2("direction", float2(0, -1));
+			break;
+		}
+
+		VGFX::SetTexture(0, "prevScene", GetPrevFrame());
+		VGFX::SetTexture(1, "nextScene", GetNextFrame());
 		VGFX::SetUniformFloat("progress", GetProgress());
 	}
 

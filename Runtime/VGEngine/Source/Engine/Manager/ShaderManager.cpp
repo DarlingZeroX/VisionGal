@@ -15,12 +15,17 @@ namespace VisionGal
 		return &manager;
 	}
 
-	void ShaderManager::AddBuiltInShader(const std::string& name)
+	void ShaderManager::AddBuiltInShader(const std::string& name, const std::string& path)
 	{
-		auto path = Core::GetEngineResourcePathVFS() + "shaders/" + name + ".glsl";
+		std::string shaderPath = Core::GetEngineResourcePathVFS() + "shaders/";
+
+		if (path.empty())
+			shaderPath += name + ".glsl";
+		else
+			shaderPath += path;
 
 		std::string shader;
-		if (VFS::ReadTextFromFile(path, shader))
+		if (VFS::ReadTextFromFile(shaderPath, shader))
 		{
 			std::string vertexShader, fragmentShader;
 			ExtractShaders(shader, vertexShader, fragmentShader);
@@ -37,7 +42,8 @@ namespace VisionGal
 
 	void ShaderManager::Initialize()
 	{
-		AddBuiltInShader("SceneFade");
+		AddBuiltInShader("TransitionFade", "transition/TransitionFade.glsl");
+		AddBuiltInShader("TransitionPush", "transition/TransitionPush.glsl");
 		AddBuiltInShader("SpriteDefault");
 		AddBuiltInShader("FullScreenQuad");
 		AddBuiltInShader("ViewportOutput");

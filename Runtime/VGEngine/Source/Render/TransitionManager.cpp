@@ -31,16 +31,44 @@ namespace VisionGal {
 			return iTransition;
 		}
 
-		if (command == "fade_in" || command == "淡入")
+		if (command == "fadeIn" || command == "淡入")
 		{
 			auto iTransition = CreateRef<FadeSceneTransition>(FadeSceneTransition::FadeType::FadeIn);
 			iTransition->SetDuration(duration);
 			return iTransition;
 		}
 
-		if (command == "fade_out" || command == "淡出")
+		if (command == "fadeOut" || command == "淡出")
 		{
 			auto iTransition = CreateRef<FadeSceneTransition>(FadeSceneTransition::FadeType::FadeOut);
+			iTransition->SetDuration(duration);
+			return iTransition;
+		}
+
+		if (command == "pushLeft" || command == "向左推入")
+		{
+			auto iTransition = CreateRef<PushSceneTransition>(PushSceneTransition::PushType::PushLeft);
+			iTransition->SetDuration(duration);
+			return iTransition;
+		}
+
+		if (command == "pushRight" || command == "向右推入")
+		{
+			auto iTransition = CreateRef<PushSceneTransition>(PushSceneTransition::PushType::PushRight);
+			iTransition->SetDuration(duration);
+			return iTransition;
+		}
+
+		if (command == "pushDown" || command == "向下推入")
+		{
+			auto iTransition = CreateRef<PushSceneTransition>(PushSceneTransition::PushType::PushDown);
+			iTransition->SetDuration(duration);
+			return iTransition;
+		}
+
+		if (command == "pushUp" || command == "向上推入")
+		{
+			auto iTransition = CreateRef<PushSceneTransition>(PushSceneTransition::PushType::PushUp);
 			iTransition->SetDuration(duration);
 			return iTransition;
 		}

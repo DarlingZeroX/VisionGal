@@ -1,7 +1,6 @@
 #include "Galgame/StoryScriptLuaInterface.h"
 #include "Galgame/GameLua.h"
 #include <string>
-//#include "Galgame/GalGameEngine.h"
 
 namespace VisionGal::GalGame
 {

@@ -47,6 +47,7 @@ namespace VisionGal
 		float m_Duration = 0.f;
 	};
 
+	/// 溶解转场
 	class DissolveSceneTransition: public  SceneTransitionBase
 	{
 	public:
@@ -62,6 +63,7 @@ namespace VisionGal
 		VGFX::IShaderProgram* m_ShaderProgram;
 	};
 
+	/// 淡入淡出转场
 	class FadeSceneTransition: public SceneTransitionBase
 	{
 	public:
@@ -84,6 +86,32 @@ namespace VisionGal
 		//static Ref<VGFX::IShaderProgram> s_ShaderProgram;
 		VGFX::IShaderProgram* m_ShaderProgram;
 		FadeType m_FadeType;
+	};
+
+	/// 推入转场
+	class PushSceneTransition : public SceneTransitionBase
+	{
+	public:
+		enum class PushType
+		{
+			None = 0,		// No Fade
+			PushLeft = 1,
+			PushRight = 2,
+			PushUp = 3,
+			PushDown = 4,
+		};
+
+		PushSceneTransition(PushType type);
+		PushSceneTransition(const PushSceneTransition&) = delete;
+		PushSceneTransition& operator=(const PushSceneTransition&) = delete;
+		PushSceneTransition(PushSceneTransition&&) noexcept = default;
+		PushSceneTransition& operator=(PushSceneTransition&&) noexcept = default;
+		~PushSceneTransition() override = default;
+
+		void OnRenderTransition() override;
+	private:
+		VGFX::IShaderProgram* m_ShaderProgram;
+		PushType m_PushType;
 	};
 
 	class CustomImageSceneTransition: public SceneTransitionBase
